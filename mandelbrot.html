@@ -1,0 +1,114 @@
+<html>
+<head>
+<meta charset="utf-8"></meta>
+<title>Zbiór Mandelbrota</title>
+</head>
+<body>
+<div id="logo"></div>
+<canvas id="c" width="400" height="400"  style="border:1px solid #000000;"></canvas><br>
+x1: <input type="number" value="-2" id="x1"/><br>
+y1: <input type="number" value="-1.5" id="y1"/><br>
+szerokość: <input type="number" value="3" id="len" min="0" /><br>
+iteracje(ostrość): <input type="number" value="40" id="iter" min="0" /><br>
+<input type="button" value="Rysuj" onclick="draw()"/>
+<input type="button" value="Resetuj" onclick="reset()"/>
+<input type="button" value="Zoom +" onclick="zoom(true)"/>
+<input type="button" value="Zoom -" onclick="zoom(false)"/> Aby przybliżyć w konkretnym miejscu kliknij w nie na rysunku oraz stopniowo zwiększaj liczbę iteracji. :)
+<script>
+/*
+Autor: Zazzik1, zazzik1.ct8.pl
+*/
+let canvas = document.getElementById("c");
+let logo = document.getElementById("logo");
+let ctx = canvas.getContext("2d");
+class M{
+iteracje = 40;
+f(a,b){
+	let aa=0;
+	let bb=0;
+	let i=0;
+	for(;i<this.iteracje;i++){
+		let at = aa*aa-(bb*bb)+a;
+		bb = 2*aa*bb+b;
+		aa = at;
+		if(Math.sqrt(aa*aa+(bb*bb)) > 2) break;
+	}
+	return (Math.sqrt(aa*aa+(bb*bb)) < 2)?1:({i:i});
+}
+d(sa,sb,ea,eb,r=100){
+	const da = (ea-sa)/r;
+	const db = (eb-sb)/r;
+	let t = [];
+	for(let i=0;i<r;i++) t.push([]);
+	for(let i=0;i<r;i++){
+		for(let j=0;j<r;j++){
+			t[j][i] = this.f(sa+(i*da),sb+(j*db));
+		}
+	}
+	return t;
+}
+drawOnCanvas(a,b,ea,eb){
+	let w = canvas.width;
+	ctx.clearRect(0,0,w,w);
+	let arr = this.d(a,b,ea,eb,w);
+	for(let y=0;y<w;y++){
+		for(let x=0;x<w;x++){
+			if(arr[y][x] == 1){
+				ctx.fillStyle = "black";
+			} else {
+				let color = Math.ceil(arr[y][x].i/this.iteracje*255+20) % 255;
+				ctx.fillStyle = "rgb("+50+","+0+","+color+")";
+			}
+			ctx.fillRect(x,y,1,1);
+		}
+	}
+}
+}
+m = new M();
+m.drawOnCanvas(-2,-1.5,1,1.5); 
+//-1,-0.3, +0.05
+//-1, 0, +1
+function draw(){
+	let len = parseFloat(document.getElementById("len").value);
+	if(len <= 0){alert("Szerokość powinna być > 0");return};
+	if(parseFloat(document.getElementById("iter").value) <= 0){alert("Iteracje <= 0, ustawiono 40");document.getElementById("iter").value = 40;};
+	let x1 = parseFloat(document.getElementById("x1").value);
+	let y1 = parseFloat(document.getElementById("y1").value);
+	m.iteracje = parseFloat(document.getElementById("iter").value);
+	m.drawOnCanvas(x1, y1, x1 + len, y1 + len);
+}
+function reset(){
+	document.getElementById("len").value = 3;
+	document.getElementById("x1").value = -2;
+	document.getElementById("y1").value = -1.5;
+	draw();
+}
+function zoom(p){
+	if(p){
+		click(0.5, 0.5);
+	} else {
+		let x = parseFloat(document.getElementById("x1").value);
+		let y = parseFloat(document.getElementById("y1").value);
+		let len = parseFloat(document.getElementById("len").value);
+		document.getElementById("x1").value = -0.5 * len * 2 + x + (len/2);
+		document.getElementById("y1").value = -0.5 * len * 2 + y + (len/2);
+		document.getElementById("len").value = parseFloat(document.getElementById("len").value)*2;
+		draw();
+	}
+	draw();
+}
+canvas.addEventListener("click",e=>{
+	click(e.offsetX/canvas.width, e.offsetY/canvas.height);
+});
+function click(rX,rY){ //0-1 fraction
+	let x = parseFloat(document.getElementById("x1").value);
+	let y = parseFloat(document.getElementById("y1").value);
+	document.getElementById("len").value = parseFloat(document.getElementById("len").value)/2;
+	let len = parseFloat(document.getElementById("len").value);
+	document.getElementById("x1").value = rX * len * 2 + x - (len/2);
+	document.getElementById("y1").value = rY * len * 2 + y - (len/2);
+	draw();
+}
+</script>
+</body>
+</html>
