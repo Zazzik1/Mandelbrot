@@ -115,8 +115,8 @@ canvas.addEventListener("click", e => {
 function click(rX, rY) { //0-1 fraction
     let x = input.get(input.X1);
     let y = input.get(input.Y1);
+	input.set(input.LEN, input.get(input.LEN) / 2);
 	let len = input.get(input.LEN);
-    input.set(input.LEN, len / 2);
     input.set(input.X1, rX * len * 2 + x - (len / 2));
     input.set(input.Y1, rY * len * 2 + y - (len / 2));
     draw();
