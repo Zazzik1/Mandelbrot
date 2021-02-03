@@ -2,95 +2,33 @@
 <head>
 <meta charset="utf-8"></meta>
 <title>Mandelbrot series</title>
+<script src="mandelbrot.js" type="text/javascript"></script>
 </head>
 <body>
-<div id="logo"></div>
-<canvas id="c" width="400" height="400"  style="border:1px solid #000000;"></canvas><br>
+<canvas id="c" width="400" height="400"  style="border:1px solid #000000;cursor:pointer;"></canvas><br>
 x1: <input type="number" value="-2" id="x1"/><br>
 y1: <input type="number" value="-1.5" id="y1"/><br>
 width: <input type="number" value="3" id="len" min="0" /><br>
-iterations(sharpness): <input type="number" value="40" id="iter" min="0" /><br>
+max iterations(precision): <select id="iter"><option value="5">5</option><option name="20" value="20">20</option><option value="40" selected>40</option><option value="120">120</option><option value="200">200</option><option value="500">500</option><option value="800">800</option><option value="1000">1000</option><option value="1200">1200</option><option value="1400">1400</option></select><br>
+canvas size: <select id="cSize"><option value="400">200x200</option><option value="400">300x300</option><option value="400" selected>400x400</option><option value="400">500x500</option><option value="400">600x600</option><option value="400">700x700</option><option value="400">800x800</option></select><br>
 <input type="button" value="Draw" onclick="draw()"/>
 <input type="button" value="Reset" onclick="reset()"/>
 <input type="button" value="Zoom +" onclick="zoom(true)"/>
 <input type="button" value="Zoom -" onclick="zoom(false)"/> If you want to zoom, just click on desired place on canvas and sometimes increase iterations to make edges sharpen.
 <script>
 /*
-Autor: Zazzik1, zazzik1.ct8.pl
+Author: Zazzik1, zazzik1.ct8.pl
 */
 let canvas = document.getElementById("c");
-let logo = document.getElementById("logo");
-let ctx = canvas.getContext("2d");
-var rgb = [
-	[66, 30, 15],
-	[25, 7, 26],
-	[9, 1, 47],
-	[4, 4, 73],
-	[0, 7, 100],
-	[12, 44, 138],
-	[24, 82, 177],
-	[57, 125, 209],
-	[134, 181, 229],
-	[211, 236, 248],
-	[241, 233, 191],
-	[248, 201, 95],
-	[255, 170, 0],
-	[204, 128, 0],
-	[153, 87, 0],
-	[106, 52, 3]
-];
-var m = {
-    iterations: 40,
-    f(a, b) { //decides if the given point (a+bi) belongs to the Mandelbrot series
-        let aa = 0;
-        let bb = 0;
-        let i = 0;
-        for (; i < this.iterations; i++) { //z' = z^2 + (a+bi)
-            let at = aa * aa - (bb * bb) + a;
-            bb = 2 * aa * bb + b;
-            aa = at;
-            if (Math.sqrt(aa * aa + (bb * bb)) > 2) break; //if diverges - break
-        }
-        return (Math.sqrt(aa * aa + (bb * bb)) < 2) ? 1 : ({i: i}); //if converges - return number of iterations
-    },
-    d(sa, sb, ea, eb, r = 100) {
-        const da = (ea - sa) / r;
-        const db = (eb - sb) / r;
-        let t = new Array(r);
-        for (let i = 0; i < r; i++) {
-			t[i] = new Array(r);
-            for (let j = 0; j < r; j++) {
-                t[i][j] = this.f(sa + (i * da), sb + (j * db));
-            }
-        }
-        return t;
-    },
-    drawOnCanvas(a, b, ea, eb) {
-        let w = canvas.width;
-        ctx.clearRect(0, 0, w, w);
-        let arr = this.d(a, b, ea, eb, w);
-        for (let x = 0; x < w; x++) {
-            for (let y = 0; y < w; y++) {
-                if (arr[x][y] == 1) { //point belongs to the set
-                    ctx.fillStyle = "black";
-                } else { //colors outer points
-                    //let color = Math.ceil(arr[x][y].i / this.iterations * 255 + 20) % 255;
-                    //ctx.fillStyle = "rgb(" + 50 + "," + 0 + "," + color + ")"; 
-					
-					let color = arr[x][y].i % 16;
-					ctx.fillStyle = "rgb(" + rgb[color][0] + "," + rgb[color][1] + "," + rgb[color][2] + ")";
-                }
-                ctx.fillRect(x, y, 1, 1);
-            }
-        }
-    }
-}
+let m = new Mandelbrot(canvas);
 m.drawOnCanvas(-2, -1.5, 1, 1.5);
+
 let input = {
 	LEN: document.getElementById("len"),
 	X1: document.getElementById("x1"),
 	Y1: document.getElementById("y1"),
 	ITER: document.getElementById("iter"),
+	CSIZE: document.getElementById("cSize"),
 	get(id){return parseFloat(id.value)},
 	set(id, value){id.value = value}
 }
@@ -132,6 +70,14 @@ function zoom(p) {
 }
 canvas.addEventListener("click", e => {
     click(e.offsetX / canvas.width, e.offsetY / canvas.height);
+});
+input.ITER.addEventListener("change", () => {
+    draw();
+});
+input.CSIZE.addEventListener("change", () => {
+    canvas.width = input.get(input.CSIZE);
+	canvas.height = input.get(input.CSIZE);
+	draw();
 });
 function click(rX, rY) { //0-1 fraction
     let x = input.get(input.X1);
