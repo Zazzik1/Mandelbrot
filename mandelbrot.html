@@ -100,7 +100,7 @@ function click(rX, rY) { //0-1 fraction
 function download(){
   var link = document.createElement('a');
   link.download = 'mandelbrot.png';
-  link.href = canvas.toDataURL()
+  link.href = canvas.toDataURL("image/png", 1.0); // type, quality
   link.click();
 }
 </script>
