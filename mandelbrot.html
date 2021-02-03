@@ -21,6 +21,24 @@ Autor: Zazzik1, zazzik1.ct8.pl
 let canvas = document.getElementById("c");
 let logo = document.getElementById("logo");
 let ctx = canvas.getContext("2d");
+var rgb = [
+	[66, 30, 15],
+	[25, 7, 26],
+	[9, 1, 47],
+	[4, 4, 73],
+	[0, 7, 100],
+	[12, 44, 138],
+	[24, 82, 177],
+	[57, 125, 209],
+	[134, 181, 229],
+	[211, 236, 248],
+	[241, 233, 191],
+	[248, 201, 95],
+	[255, 170, 0],
+	[204, 128, 0],
+	[153, 87, 0],
+	[106, 52, 3]
+];
 var m = {
     iterations: 40,
     f(a, b) { //decides if the given point (a+bi) belongs to the Mandelbrot series
@@ -33,16 +51,16 @@ var m = {
             aa = at;
             if (Math.sqrt(aa * aa + (bb * bb)) > 2) break; //if diverges - break
         }
-        return (Math.sqrt(aa * aa + (bb * bb)) < 2) ? 1 : ({i: i}); //if converges - return
+        return (Math.sqrt(aa * aa + (bb * bb)) < 2) ? 1 : ({i: i}); //if converges - return number of iterations
     },
     d(sa, sb, ea, eb, r = 100) {
         const da = (ea - sa) / r;
         const db = (eb - sb) / r;
-        let t = [];
-		for (let i = 0; i < r; i++) t.push([]);
+        let t = new Array(r);
         for (let i = 0; i < r; i++) {
+			t[i] = new Array(r);
             for (let j = 0; j < r; j++) {
-                t[j][i] = this.f(sa + (i * da), sb + (j * db));
+                t[i][j] = this.f(sa + (i * da), sb + (j * db));
             }
         }
         return t;
@@ -51,13 +69,16 @@ var m = {
         let w = canvas.width;
         ctx.clearRect(0, 0, w, w);
         let arr = this.d(a, b, ea, eb, w);
-        for (let y = 0; y < w; y++) {
-            for (let x = 0; x < w; x++) {
-                if (arr[y][x] == 1) {
+        for (let x = 0; x < w; x++) {
+            for (let y = 0; y < w; y++) {
+                if (arr[x][y] == 1) { //point belongs to the set
                     ctx.fillStyle = "black";
-                } else {
-                    let color = Math.ceil(arr[y][x].i / this.iterations * 255 + 20) % 255;
-                    ctx.fillStyle = "rgb(" + 50 + "," + 0 + "," + color + ")";
+                } else { //colors outer points
+                    //let color = Math.ceil(arr[x][y].i / this.iterations * 255 + 20) % 255;
+                    //ctx.fillStyle = "rgb(" + 50 + "," + 0 + "," + color + ")"; 
+					
+					let color = arr[x][y].i % 16;
+					ctx.fillStyle = "rgb(" + rgb[color][0] + "," + rgb[color][1] + "," + rgb[color][2] + ")";
                 }
                 ctx.fillRect(x, y, 1, 1);
             }
