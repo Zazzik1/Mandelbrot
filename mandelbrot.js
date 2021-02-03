@@ -43,23 +43,22 @@ class Mandelbrot {
             i: i
         }); //if converges return 1; if diverges return object with number of iterations
     }
-    drawOnCanvas(a, b, ea, eb) {
-        if (this.canvas != null && this.ctx != null) {
-            let w = this.canvas.width;
-            this.ctx.clearRect(0, 0, w, w);
-            const da = (ea - a) / w;
-            const db = (eb - b) / w;
-            for (let x = 0; x < w; x++) {
-                for (let y = 0; y < w; y++) {
-                    let point = this.isInSet(a + (x * da), b + (y * db));
-                    if (point == 1) { //point belongs to the set
-                        this.ctx.fillStyle = "black";
-                    } else { //colors outer points
-                        let color = point.i % 16;
-                        this.ctx.fillStyle = "rgb(" + this.rgb[color][0] + "," + this.rgb[color][1] + "," + this.rgb[color][2] + ")";
-                    }
-                    this.ctx.fillRect(x, y, 1, 1);
+    drawOnCanvas(a, b, ea, eb) { //x1, y1, x2, y2
+        let w = this.canvas.width;
+		let h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        const da = (ea - a) / w;
+        const db = (eb - b) / h;
+        for (let x = 0; x < w; x++) {
+            for (let y = 0; y < h; y++) {
+                let point = this.isInSet(a + (x * da), b + (y * db));
+                if (point == 1) { //point belongs to the set
+                    this.ctx.fillStyle = "black";
+                } else { //colors outer points
+                    let color = point.i % 16;
+                    this.ctx.fillStyle = "rgb(" + this.rgb[color][0] + "," + this.rgb[color][1] + "," + this.rgb[color][2] + ")";
                 }
+                this.ctx.fillRect(x, y, 1, 1);
             }
         }
     }
