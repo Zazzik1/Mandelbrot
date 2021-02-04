@@ -4,7 +4,9 @@ Author: Zazzik1, zazzik1.ct8.pl
 class Mandelbrot {
     canvas = null;
     ctx = null;
-    iterations = 40;
+    iterations = 120;
+	maxLoopNr = 30;
+	lastTimeout = null;
     rgb = [
         [66, 30, 15],
         [25, 7, 26],
@@ -23,6 +25,7 @@ class Mandelbrot {
         [153, 87, 0],
         [106, 52, 3]
     ];
+	loopData = null;
     constructor(canvas) {
         if (canvas) {
             this.canvas = canvas;
@@ -44,22 +47,30 @@ class Mandelbrot {
         }); //if converges return 1; if diverges return object with number of iterations
     }
     drawOnCanvas(a, b, ea, eb) { //x1, y1, x2, y2
+		if(this.lastTimeout) clearTimeout(this.lastTimeout);
         let w = this.canvas.width;
 		let h = this.canvas.height;
         this.ctx.clearRect(0, 0, w, h);
         const da = (ea - a) / w;
         const db = (eb - b) / h;
-        for (let x = 0; x < w; x++) {
-            for (let y = 0; y < h; y++) {
-                let point = this.isInSet(a + (x * da), b + (y * db));
+        this.drawLoop(this, a, b, w, h, da, db);
+    }
+	drawLoop(self, a, b, w, h, da, db, loopNr = 0){
+		for (let x = 0; x < w; x++) {
+            for (let y = loopNr; y < h; y+=self.maxLoopNr) {
+				if(self.stop) return;
+                let point = self.isInSet(a + (x * da), b + (y * db));
                 if (point == 1) { //point belongs to the set
-                    this.ctx.fillStyle = "black";
+                    self.ctx.fillStyle = "black";
                 } else { //colors outer points
                     let color = point.i % 16;
-                    this.ctx.fillStyle = "rgb(" + this.rgb[color][0] + "," + this.rgb[color][1] + "," + this.rgb[color][2] + ")";
+                    self.ctx.fillStyle = "rgb(" + self.rgb[color][0] + "," + self.rgb[color][1] + "," + self.rgb[color][2] + ")";
                 }
-                this.ctx.fillRect(x, y, 1, 1);
+                self.ctx.fillRect(x, y, 1, 1);
             }
         }
-    }
+		if(loopNr < self.maxLoopNr){ //max loopNr - bigger = smoother loading
+			self.lastTimeout = setTimeout(self.drawLoop, 0, self, a, b, w, h, da, db, loopNr + 1);
+		}
+	}
 }
