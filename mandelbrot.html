@@ -33,7 +33,7 @@ y1: <input type="number" value="-1.5" id="y1"/> height: <input type="number" val
 max iterations(precision): <select id="iter"><option value="5">5</option><option name="20" value="20">20</option><option value="40">40</option><option value="120" selected>120</option><option value="200">200</option><option value="500">500</option><option value="800">800</option><option value="1000">1000</option><option value="1200">1200</option><option value="1400">1400</option><option value="2000">2000</option><option value="2500">2500</option><option value="3000">3000</option><option value="5000">5000</option></select><br>
 canvas size: <select id="cSize"><option value="400x400" selected>400x400</option><option value="500x500">500x500</option><option value="600x600">600x600</option><option value="700x700">700x700</option><option value="800x800">800x800</option><option value="-" disabled>------------</option><option value="360x640">360x640</option><option value="640x480">640x480</option><option value="1280x720">1280x720 HD</option><option value="1920x1080">1920x1080 Full HD</option><option value="3840x2160">3840x2160 4K</option></select>
 Larger canvas sizes as well as larger maximum iteration values ​​can take much longer to compute.<br>
-<input type="button" value="Draw" onclick="draw()"/>
+<input type="button" value="Draw" class="h" onclick="draw()"/>
 <input type="button" value="Reset" onclick="reset()"/>
 <input type="button" value="Zoom +" onclick="zoom(true)"/>
 <input type="button" value="Zoom -" onclick="zoom(false)"/> If you want to zoom, just click on desired place on canvas and sometimes increase iterations to make edges sharpen.<br>
