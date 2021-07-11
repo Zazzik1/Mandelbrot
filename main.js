@@ -1,4 +1,4 @@
- // Author: Zazzik1, zazzik1.ct8.pl
+ // Author: Zazzik1
 
 let canvas = document.getElementById("c");
 let m = new Mandelbrot(canvas);

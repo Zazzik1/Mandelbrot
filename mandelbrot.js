@@ -1,9 +1,5 @@
-/*
-Author: Zazzik1, zazzik1.ct8.pl
-*/
+// Author: Zazzik1
 class Mandelbrot {
-    canvas = null;
-    ctx = null;
     iterations = 120;
 	maxLoopNr = 30;
 	lastTimeout = null;
@@ -25,7 +21,6 @@ class Mandelbrot {
         [153, 87, 0],
         [106, 52, 3]
     ];
-	loopData = null;
     constructor(canvas) {
         if (canvas) {
             this.canvas = canvas;
