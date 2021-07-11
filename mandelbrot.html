@@ -1,132 +1,58 @@
+<!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8"></meta>
-<title>Mandelbrot series</title>
-<script src="mandelbrot.js" type="text/javascript"></script>
-<style>
-body {
-	background-color:black;
-	color:white;
-	font-family:tahoma;
-}
-.h {
-	display:none;
-}
-input {
-	background-color:lightblue;
-	border:2px solid violet;
-	border-radius:2px 2px 2px 2px;
-	margin:1px;
-	font-family:tahoma;
-}
-canvas {
-	border:1px solid blue;
-	cursor:pointer;
-}
-</style>
-</head>
-<body>
-<canvas class="center" id="c" width="400" height="400"></canvas><br>
-<div class="h">
-x1: <input type="number" value="-2" id="x1"/> width: <input type="number" value="3" id="len" min="0" disabled /><br>
-y1: <input type="number" value="-1.5" id="y1"/> height: <input type="number" value="3" id="len2" min="0" disabled /><br></div>
-max iterations(precision): <select id="iter"><option value="5">5</option><option name="20" value="20">20</option><option value="40">40</option><option value="120" selected>120</option><option value="200">200</option><option value="500">500</option><option value="800">800</option><option value="1000">1000</option><option value="1200">1200</option><option value="1400">1400</option><option value="2000">2000</option><option value="2500">2500</option><option value="3000">3000</option><option value="5000">5000</option></select><br>
-canvas size: <select id="cSize"><option value="400x400" selected>400x400</option><option value="500x500">500x500</option><option value="600x600">600x600</option><option value="700x700">700x700</option><option value="800x800">800x800</option><option value="-" disabled>------------</option><option value="360x640">360x640</option><option value="640x480">640x480</option><option value="1280x720">1280x720 HD</option><option value="1920x1080">1920x1080 Full HD</option><option value="3840x2160">3840x2160 4K</option></select>
-Larger canvas sizes as well as larger maximum iteration values ​​can take much longer to compute.<br>
-<input type="button" value="Draw" class="h" onclick="draw()"/>
-<input type="button" value="Reset" onclick="reset()"/>
-<input type="button" value="Zoom +" onclick="zoom(true)"/>
-<input type="button" value="Zoom -" onclick="zoom(false)"/> If you want to zoom, just click on desired place on canvas and sometimes increase iterations to make edges sharpen.<br>
-<input type="button" value="Download image" onclick="download()" />
-<script>
-/*
-Author: Zazzik1, zazzik1.ct8.pl
-*/
-let canvas = document.getElementById("c");
-let m = new Mandelbrot(canvas);
-m.drawOnCanvas(-2, -1.5, 1, 1.5); //x1, x2, y1, y2
-
-let input = {
-	LEN: document.getElementById("len"), //width
-	LEN2: document.getElementById("len2"), //height
-	X1: document.getElementById("x1"),
-	Y1: document.getElementById("y1"),
-	ITER: document.getElementById("iter"),
-	CSIZE: document.getElementById("cSize"),
-	get(id){return parseFloat(id.value)},
-	set(id, value){id.value = value}
-}
-function draw() {
-    let len = input.get(input.LEN);
-	let len2 = input.get(input.LEN2);
-    if (len <= 0 && len2 <= 0) {
-        alert("Width should be > 0");
-        return
-    };
-    if (input.get(input.ITER) <= 0) {
-        alert("iterations are <= 0, corrected to 40");
-        input.set(input.ITER, 40)
-    };
-    let x1 = input.get(input.X1);
-    let y1 = input.get(input.Y1);
-    m.iterations = input.get(input.ITER);
-    m.drawOnCanvas(x1, y1, x1 + len, y1 + len2);
-}
-
-function reset() {
-    input.set(input.LEN, 3);
-	input.set(input.LEN2, 3 / canvas.width * canvas.height);
-    input.set(input.X1, -2);
-    input.set(input.Y1, -1.5);
-    draw();
-}
-function zoom(p) {
-    if (p) {
-        click(0.5, 0.5);
-    } else {
-        let x = input.get(input.X1);
-        let y = input.get(input.Y1);
-        let len = input.get(input.LEN);
-		let len2 = input.get(input.LEN2);
-        input.set(input.X1, x - (0.5 * len));
-        input.set(input.Y1, y - (0.5 * len2));
-        input.set(input.LEN, len * 2);
-		input.set(input.LEN2, len2 * 2);
-        draw();
-    }
-    draw();
-}
-canvas.addEventListener("click", e => {
-    click(e.offsetX / canvas.width, e.offsetY / canvas.height);
-});
-input.ITER.addEventListener("change", () => {
-    draw();
-});
-input.CSIZE.addEventListener("change", () => {
-	let size = document.getElementById("cSize").value.split("x");
-    canvas.width = size[0];
-	canvas.height = size[1];
-	input.set(input.LEN2, input.get(input.LEN) / canvas.width * canvas.height);
-	draw();
-	//reset();
-});
-function click(rX, rY) { //0-1 fraction
-    let x = input.get(input.X1);
-    let y = input.get(input.Y1);
-	input.set(input.LEN, input.get(input.LEN) / 2);
-	input.set(input.LEN2, input.get(input.LEN2) / 2);
-	let len = input.get(input.LEN);
-	let len2 = input.get(input.LEN2);
-    input.set(input.X1, rX * len * 2 + x - (len / 2));
-    input.set(input.Y1, rY * len2 * 2 + y - (len2 / 2));
-    draw();
-}
-function download(){
-  var link = document.createElement('a');
-  link.download = 'mandelbrot.png';
-  link.href = canvas.toDataURL("image/png", 1.0); // type, quality
-  link.click();
-}
-</script>
-</body>
+   <head>
+      <meta charset="utf-8">
+      </meta>
+      <title>Mandelbrot series</title>
+      <link rel="stylesheet" href="styles.css" />
+      <script src="mandelbrot.js" type="text/javascript"></script>
+      <script src="main.js" type="text/javascript" defer></script>
+   </head>
+   <body>
+      <canvas class="center" id="c" width="400" height="400"></canvas>
+      <br>
+      <div class="h">
+         x1: <input type="number" value="-2" id="x1"/> width: <input type="number" value="3" id="len" min="0" disabled /><br>
+         y1: <input type="number" value="-1.5" id="y1"/> height: <input type="number" value="3" id="len2" min="0" disabled /><br>
+      </div>
+      max iterations(precision): 
+      <select id="iter">
+         <option value="5">5</option>
+         <option name="20" value="20">20</option>
+         <option value="40">40</option>
+         <option value="120" selected>120</option>
+         <option value="200">200</option>
+         <option value="500">500</option>
+         <option value="800">800</option>
+         <option value="1000">1000</option>
+         <option value="1200">1200</option>
+         <option value="1400">1400</option>
+         <option value="2000">2000</option>
+         <option value="2500">2500</option>
+         <option value="3000">3000</option>
+         <option value="5000">5000</option>
+      </select>
+      <br>
+      canvas size: 
+      <select id="cSize">
+         <option value="400x400" selected>400x400</option>
+         <option value="500x500">500x500</option>
+         <option value="600x600">600x600</option>
+         <option value="700x700">700x700</option>
+         <option value="800x800">800x800</option>
+         <option value="-" disabled>------------</option>
+         <option value="360x640">360x640</option>
+         <option value="640x480">640x480</option>
+         <option value="1280x720">1280x720 HD</option>
+         <option value="1920x1080">1920x1080 Full HD</option>
+         <option value="3840x2160">3840x2160 4K</option>
+      </select>
+      Larger canvas sizes as well as larger maximum iteration values ​​can take much longer to compute.<br>
+      <input type="button" value="Draw" class="h" onclick="draw()"/>
+      <input type="button" value="Reset" onclick="reset()"/>
+      <input type="button" value="Zoom +" onclick="zoom(true)"/>
+      <input type="button" value="Zoom -" onclick="zoom(false)"/>
+       If you want to zoom, just click on desired place on canvas and sometimes increase iterations to make edges sharpen.<br>
+      <input type="button" value="Download image" onclick="download()"/>
+   </body>
 </html>

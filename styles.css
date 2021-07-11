@@ -1,0 +1,19 @@
+body {
+	background-color:black;
+	color:white;
+	font-family:tahoma;
+}
+.h {
+	display:none;
+}
+input {
+	background-color:lightblue;
+	border:2px solid violet;
+	border-radius:2px 2px 2px 2px;
+	margin:1px;
+	font-family:tahoma;
+}
+canvas {
+	border:1px solid blue;
+	cursor:pointer;
+}
