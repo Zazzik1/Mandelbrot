@@ -27,45 +27,42 @@ class Mandelbrot {
             this.ctx = canvas.getContext("2d");
         } else throw "Error: canvas was not given";
     }
-    isInSet(a, b) { //decides if the given point (a+bi) belongs to the Mandelbrot series
-        let aa = 0;
-        let bb = 0;
-        let i = 0;
+    isInSet(a, b) { //decides if the given point (a+bi) belongs to the Mandelbrot series: returns nothing when belongs or no. of iterations in other case
+        let aa, bb, i;
+        aa = bb = i = 0;
         for (; i < this.iterations; i++) { //z' = z^2 + (a+bi)
-            let at = aa * aa - (bb * bb) + a;
+            let at = aa ** 2 - (bb ** 2) + a;
             bb = 2 * aa * bb + b;
             aa = at;
-            if (Math.sqrt(aa * aa + (bb * bb)) > 2) break; //if diverges - break
+            if (Math.sqrt(aa ** 2 + (bb ** 2)) > 2) return i // diverges
         }
-        return (Math.sqrt(aa * aa + (bb * bb)) < 2) ? 1 : ({
-            i: i
-        }); //if converges return 1; if diverges return object with number of iterations
+        return // convergence
     }
-    drawOnCanvas(a, b, ea, eb) { //x1, y1, x2, y2
+    drawOnCanvas(a, b, ea, eb) { //x1, y1, x2, y2 - function used for actual drawing
 		if(this.lastTimeout) clearTimeout(this.lastTimeout);
         let w = this.canvas.width;
 		let h = this.canvas.height;
         this.ctx.clearRect(0, 0, w, h);
         const da = (ea - a) / w;
         const db = (eb - b) / h;
-        this.drawLoop(this, a, b, w, h, da, db);
+        this.drawLoop(a, b, w, h, da, db);
     }
-	drawLoop(self, a, b, w, h, da, db, loopNr = 0){
+	drawLoop = (a, b, w, h, da, db, loopNr = 0) => {
 		for (let x = 0; x < w; x++) {
-            for (let y = loopNr; y < h; y+=self.maxLoopNr) {
-				if(self.stop) return;
-                let point = self.isInSet(a + (x * da), b + (y * db));
-                if (point == 1) { //point belongs to the set
-                    self.ctx.fillStyle = "black";
+            for (let y = loopNr; y < h; y+=this.maxLoopNr) {
+				if(this.stop) return;
+                let point = this.isInSet(a + (x * da), b + (y * db));
+                if (!point) { //point belongs to the set
+                    this.ctx.fillStyle = "black";
                 } else { //colors outer points
-                    let color = point.i % 16;
-                    self.ctx.fillStyle = "rgb(" + self.rgb[color][0] + "," + self.rgb[color][1] + "," + self.rgb[color][2] + ")";
+                    let color = point % 16;
+                    this.ctx.fillStyle = "rgb(" + this.rgb[color][0] + "," + this.rgb[color][1] + "," + this.rgb[color][2] + ")";
                 }
-                self.ctx.fillRect(x, y, 1, 1);
+                this.ctx.fillRect(x, y, 1, 1);
             }
         }
-		if(loopNr < self.maxLoopNr){ //max loopNr - bigger = smoother loading
-			self.lastTimeout = setTimeout(self.drawLoop, 0, self, a, b, w, h, da, db, loopNr + 1);
+		if(loopNr < this.maxLoopNr){ //max loopNr - bigger = smoother loading
+			this.lastTimeout = setTimeout(this.drawLoop, 0, a, b, w, h, da, db, loopNr + 1);
 		}
 	}
 }
