@@ -4,22 +4,22 @@ class Mandelbrot {
 	maxLoopNr = 30;
 	lastTimeout = null;
     rgb = [
-        [66, 30, 15],
-        [25, 7, 26],
-        [9, 1, 47],
-        [4, 4, 73],
-        [0, 7, 100],
-        [12, 44, 138],
-        [24, 82, 177],
-        [57, 125, 209],
-        [134, 181, 229],
-        [211, 236, 248],
-        [241, 233, 191],
-        [248, 201, 95],
-        [255, 170, 0],
-        [204, 128, 0],
-        [153, 87, 0],
-        [106, 52, 3]
+        "rgb(66,30,15)",
+        "rgb(25,7,26)",
+        "rgb(9,1,47)",
+        "rgb(4,4,73)",
+        "rgb(0,7,100)",
+        "rgb(12,44,138)",
+        "rgb(24,82,177)",
+        "rgb(57,125,209)",
+        "rgb(134,181,229)",
+        "rgb(211,236,248)",
+        "rgb(241,233,191)",
+        "rgb(248,201,95)",
+        "rgb(255,170,0)",
+        "rgb(204,128,0)",
+        "rgb(153,87,0)",
+        "rgb(106,52,3)"
     ];
     constructor(canvas, doneCallback) {
         if (canvas) {
@@ -56,7 +56,7 @@ class Mandelbrot {
                     this.ctx.fillStyle = "black";
                 } else { //colors outer points
                     let color = point % 16;
-                    this.ctx.fillStyle = "rgb(" + this.rgb[color][0] + "," + this.rgb[color][1] + "," + this.rgb[color][2] + ")";
+                    this.ctx.fillStyle = this.rgb[color];
                 }
                 this.ctx.fillRect(x, y, 1, 1);
             }
