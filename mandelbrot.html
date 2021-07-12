@@ -5,8 +5,7 @@
       </meta>
       <title>Mandelbrot series</title>
       <link rel="stylesheet" href="styles.css" />
-      <script src="mandelbrot.js" type="text/javascript"></script>
-      <script src="main.js" type="text/javascript" defer></script>
+      <script src="main.js" type="module" defer></script>
    </head>
    <body>
       <canvas class="center" id="c" width="400" height="400"></canvas>
@@ -30,6 +29,9 @@
          <option value="2000">2000</option>
          <option value="2500">2500</option>
          <option value="3000">3000</option>
+         <option value="3500">3500</option>
+         <option value="4000">4000</option>
+         <option value="4500">4500</option>
          <option value="5000">5000</option>
       </select>
       <br>
@@ -48,11 +50,10 @@
          <option value="3840x2160">3840x2160 4K</option>
       </select>
       Larger canvas sizes as well as larger maximum iteration values ​​can take much longer to compute.<br>
-      <input type="button" value="Draw" class="h" onclick="draw()"/>
-      <input type="button" value="Reset" onclick="reset()"/>
-      <input type="button" value="Zoom +" onclick="zoom(true)"/>
-      <input type="button" value="Zoom -" onclick="zoom(false)"/>
+      <input id="reset" type="button" value="Reset"/>
+      <input id="zoom_minus" type="button" value="Zoom +"/>
+      <input id="zoom_plus" type="button" value="Zoom -"/>
        If you want to zoom, just click on desired place on canvas and sometimes increase iterations to make edges sharpen.<br>
-      <input type="button" value="Download image" onclick="download()"/>
+      <input id="download" type="button" value="Download image"/>
    </body>
 </html>
