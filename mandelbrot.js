@@ -21,10 +21,11 @@ class Mandelbrot {
         [153, 87, 0],
         [106, 52, 3]
     ];
-    constructor(canvas) {
+    constructor(canvas, doneCallback) {
         if (canvas) {
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
+            this.done = doneCallback;
         } else throw "Error: canvas was not given";
     }
     isInSet(a, b) { //decides if the given point (a+bi) belongs to the Mandelbrot series: returns nothing when belongs or no. of iterations in other case
@@ -45,9 +46,9 @@ class Mandelbrot {
         this.ctx.clearRect(0, 0, w, h);
         const da = (ea - a) / w;
         const db = (eb - b) / h;
-        this.drawLoop(a, b, w, h, da, db);
+        this._drawLoop(a, b, w, h, da, db);
     }
-	drawLoop = (a, b, w, h, da, db, loopNr = 0) => {
+	_drawLoop = (a, b, w, h, da, db, loopNr = 0) => {
 		for (let x = 0; x < w; x++) {
             for (let y = loopNr; y < h; y+=this.maxLoopNr) {
 				if(this.stop) return;
@@ -62,7 +63,7 @@ class Mandelbrot {
             }
         }
 		if(loopNr < this.maxLoopNr){ //max loopNr - bigger = smoother loading
-			this.lastTimeout = setTimeout(this.drawLoop, 0, a, b, w, h, da, db, loopNr + 1);
-		}
+			this.lastTimeout = setTimeout(this._drawLoop, 0, a, b, w, h, da, db, loopNr + 1);
+		} else if(typeof this.done === "function") this.done();
 	}
 }
