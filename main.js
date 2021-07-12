@@ -1,8 +1,9 @@
  // Author: Zazzik1
+import Mandelbrot from './mandelbrot.js';
 
 let canvas = document.getElementById("c");
-let m = new Mandelbrot(canvas);
-m.drawOnCanvas(-2, -1.5, 1, 1.5); //x1, x2, y1, y2
+var m = new Mandelbrot(canvas);
+m.drawOnCanvas(-2, -1.5, 1, 1.5); //x1, y1, x2, y2
 
 let input = {
     LEN: document.getElementById("len"), //width
@@ -44,46 +45,36 @@ function reset() {
     draw();
 }
 
-function zoom(p) {
-    if (p) {
-        click(0.5, 0.5);
-    } else {
-        let x = input.get(input.X1);
-        let y = input.get(input.Y1);
-        let len = input.get(input.LEN);
-        let len2 = input.get(input.LEN2);
-        input.set(input.X1, x - (0.5 * len));
-        input.set(input.Y1, y - (0.5 * len2));
-        input.set(input.LEN, len * 2);
-        input.set(input.LEN2, len2 * 2);
-        draw();
-    }
-    draw();
-}
-canvas.addEventListener("click", e => {
-    click(e.offsetX / canvas.width, e.offsetY / canvas.height);
+canvas.addEventListener("mousedown", e => {
+    if (e.button == 0) {
+        click(e.offsetX / canvas.width, e.offsetY / canvas.height);
+    } else if (e.button == 2) click(e.offsetX / canvas.width, e.offsetY / canvas.height, 0.5);
 });
-input.ITER.addEventListener("change", () => {
-    draw();
-});
+
+canvas.addEventListener("contextmenu", e => e.preventDefault());
+document.getElementById("reset").addEventListener("click", e => reset());
+document.getElementById("zoom_plus").addEventListener("click", e => click(0.5, 0.5));
+document.getElementById("zoom_minus").addEventListener("click", e => click(0.5, 0.5, 0.5));
+document.getElementById("download").addEventListener("click", e => download());
+input.ITER.addEventListener("change", () => draw());
+
 input.CSIZE.addEventListener("change", () => {
     let size = document.getElementById("cSize").value.split("x");
     canvas.width = size[0];
     canvas.height = size[1];
     input.set(input.LEN2, input.get(input.LEN) / canvas.width * canvas.height);
     draw();
-    //reset();
 });
 
-function click(rX, rY) { //0-1 fraction
+function click(rX, rY, mult = 2) { //0-1 fraction
     let x = input.get(input.X1);
     let y = input.get(input.Y1);
-    input.set(input.LEN, input.get(input.LEN) / 2);
-    input.set(input.LEN2, input.get(input.LEN2) / 2);
+    input.set(input.LEN, input.get(input.LEN) / mult);
+    input.set(input.LEN2, input.get(input.LEN2) / mult);
     let len = input.get(input.LEN);
     let len2 = input.get(input.LEN2);
-    input.set(input.X1, rX * len * 2 + x - (len / 2));
-    input.set(input.Y1, rY * len2 * 2 + y - (len2 / 2));
+    input.set(input.X1, rX * len * mult + x - (len / 2));
+    input.set(input.Y1, rY * len2 * mult + y - (len2 / 2));
     draw();
 }
 
