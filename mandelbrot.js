@@ -29,15 +29,14 @@ class Mandelbrot {
         } else throw "Error: canvas was not given";
     }
     isInSet(a, b) { //decides if the given point (a+bi) belongs to the Mandelbrot series: returns nothing when belongs or no. of iterations in other case
-        let aa, bb, i;
-        aa = bb = i = 0;
-        for (; i < this.iterations; i++) { //z' = z^2 + (a+bi)
+        let aa, bb;
+        aa = bb = 0;
+        for (let i = 1; i <= this.iterations; i++) { //z' = z^2 + (a+bi)
             let at = aa ** 2 - (bb ** 2) + a;
             bb = 2 * aa * bb + b;
             aa = at;
             if (Math.sqrt(aa ** 2 + (bb ** 2)) > 2) return i // diverges
         }
-        return // convergence
     }
     drawOnCanvas(a, b, ea, eb) { //x1, y1, x2, y2 - function used for actual drawing
 		if(this.lastTimeout) clearTimeout(this.lastTimeout);
