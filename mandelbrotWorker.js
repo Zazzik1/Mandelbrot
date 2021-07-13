@@ -2,7 +2,6 @@
 class MandelbrotWorker {
     constructor(task, id, linesToDo, startingLine, rgb) {
         this.id = id;
-        this.interrupt = false;
         this.task = task;
         this.linesToDo = linesToDo;
         this.startingLine = startingLine;
@@ -21,7 +20,6 @@ class MandelbrotWorker {
     }
     _runLoop = (line = this.startingLine) => {
         if (line < this.startingLine + this.linesToDo){
-            if (this.interrupt) return this.finish();
             self.postMessage({ 
                 action: "drawLine", 
                 line: this.calculateLine(line),
