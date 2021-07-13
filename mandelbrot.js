@@ -65,11 +65,8 @@ export default class Mandelbrot {
         }
     }
     removeWorkers(){
-        for(let id in this.workers){
-            this.workers[id].interrupt = true;
-            this.workers[id].terminate();
-            this.workers.shift();
-        }
+        this.workers.map(w => w.terminate());
+        this.workers = [];
     }
     drawLine(y, line){
         this.ctx.putImageData(line, 0, y)
