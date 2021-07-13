@@ -3,6 +3,7 @@ import Mandelbrot from './mandelbrot.js';
 
 let canvas = document.getElementById("c");
 var m = new Mandelbrot(canvas);
+window.m = m; // to make object accessible from console of browser
 m.drawOnCanvas(-2, -1.5, 1, 1.5); //x1, y1, x2, y2
 
 let input = {
