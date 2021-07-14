@@ -1,2 +1,2 @@
 # Mandelbrot
-Interactive representation of the Mandelbrot series using Javascript and HTML Canvas element.
+Interactive representation of the Mandelbrot series using Javascript, Web Workers and HTML Canvas element.
