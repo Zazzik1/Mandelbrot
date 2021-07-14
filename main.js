@@ -2,6 +2,7 @@
 import Mandelbrot from './mandelbrot.js';
 
 let canvas = document.getElementById("c");
+let wheel = document.getElementById("wheel");
 var m = new Mandelbrot(canvas);
 window.m = m; // to make object accessible from console of browser
 m.drawOnCanvas(-2, -1.5, 1, 1.5); //x1, y1, x2, y2
@@ -74,9 +75,13 @@ canvas.addEventListener("mousedown", e => {
 });
 
 canvas.addEventListener("wheel", e => {
+    if(!wheel.checked) {
+        e.preventDefault();
+        return false
+    }
     if(e.wheelDelta > 0) {
-        click(e.offsetX / canvas.width, e.offsetY / canvas.height, 1.5);
-    } else if(e.wheelDelta < 0) click(e.offsetX / canvas.width, e.offsetY / canvas.height, 1/1.5);
+        click(e.offsetX / canvas.width, e.offsetY / canvas.height, 1.4);
+    } else if(e.wheelDelta < 0) click(e.offsetX / canvas.width, e.offsetY / canvas.height, 1/1.4);
 });
 
 canvas.addEventListener("contextmenu", e => e.preventDefault());
