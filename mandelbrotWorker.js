@@ -42,7 +42,7 @@ class MandelbrotWorker {
             if (!diverge) { 
                 var c = [0, 0, 0]; //point belongs to the set
             } else { 
-                let color = diverge % 16;
+                let color = diverge % this.rgb.length;
                 var c = this.rgb[color]; //colors outer points
             }
             line.data[x] = c[0];
