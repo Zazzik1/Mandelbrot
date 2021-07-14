@@ -65,7 +65,7 @@ export default class Mandelbrot {
         }
     }
     removeWorkers(){
-        this.workers.map(w => w.terminate());
+        this.workers.forEach(w => w.terminate());
         this.workers = [];
     }
     drawLine(y, line){
