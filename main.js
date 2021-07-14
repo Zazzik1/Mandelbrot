@@ -46,27 +46,6 @@ function reset() {
     draw();
 }
 
-canvas.addEventListener("mousedown", e => {
-    if (e.button == 0) {
-        click(e.offsetX / canvas.width, e.offsetY / canvas.height);
-    } else if (e.button == 2) click(e.offsetX / canvas.width, e.offsetY / canvas.height, 0.5);
-});
-
-canvas.addEventListener("contextmenu", e => e.preventDefault());
-document.getElementById("reset").addEventListener("click", e => reset());
-document.getElementById("zoom_plus").addEventListener("click", e => click(0.5, 0.5));
-document.getElementById("zoom_minus").addEventListener("click", e => click(0.5, 0.5, 0.5));
-document.getElementById("download").addEventListener("click", e => download());
-input.ITER.addEventListener("change", () => draw());
-
-input.CSIZE.addEventListener("change", () => {
-    let size = document.getElementById("cSize").value.split("x");
-    canvas.width = size[0];
-    canvas.height = size[1];
-    input.set(input.LEN2, input.get(input.LEN) / canvas.width * canvas.height);
-    draw();
-});
-
 function click(rX, rY, mult = 2) { //0-1 fraction
     let x = input.get(input.X1);
     let y = input.get(input.Y1);
@@ -85,3 +64,32 @@ function download() {
     link.href = canvas.toDataURL("image/png", 1.0); // type, quality
     link.click();
 }
+
+// event listeners
+
+canvas.addEventListener("mousedown", e => {
+    if (e.button == 0) {
+        click(e.offsetX / canvas.width, e.offsetY / canvas.height);
+    } else if (e.button == 2) click(e.offsetX / canvas.width, e.offsetY / canvas.height, 0.5);
+});
+
+canvas.addEventListener("wheel", e => {
+    if(e.wheelDelta > 0) {
+        click(e.offsetX / canvas.width, e.offsetY / canvas.height, 1.5);
+    } else if(e.wheelDelta < 0) click(e.offsetX / canvas.width, e.offsetY / canvas.height, 1/1.5);
+});
+
+canvas.addEventListener("contextmenu", e => e.preventDefault());
+document.getElementById("reset").addEventListener("click", e => reset());
+document.getElementById("zoom_plus").addEventListener("click", e => click(0.5, 0.5));
+document.getElementById("zoom_minus").addEventListener("click", e => click(0.5, 0.5, 0.5));
+document.getElementById("download").addEventListener("click", e => download());
+input.ITER.addEventListener("change", () => draw());
+
+input.CSIZE.addEventListener("change", () => {
+    let size = document.getElementById("cSize").value.split("x");
+    canvas.width = size[0];
+    canvas.height = size[1];
+    input.set(input.LEN2, input.get(input.LEN) / canvas.width * canvas.height);
+    draw();
+});
