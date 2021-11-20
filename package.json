@@ -1,0 +1,24 @@
+{
+  "name": "mandelbrot",
+  "version": "1.0.0",
+  "description": "Interactive representation of the Mandelbrot series using Javascript, Web Workers and HTML Canvas element.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zazzik1/Mandelbrot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zazzik1/Mandelbrot/issues"
+  },
+  "homepage": "https://github.com/Zazzik1/Mandelbrot#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "path": "^0.12.7"
+  }
+}
