@@ -1,4 +1,3 @@
-![Preview](https://user-images.githubusercontent.com/78451054/144238786-6bf2f184-4256-45a3-a179-201738d036fa.png)
 <p align="center">
   <img src="https://user-images.githubusercontent.com/78451054/144238786-6bf2f184-4256-45a3-a179-201738d036fa.png">
 </p>
