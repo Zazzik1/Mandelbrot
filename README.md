@@ -11,7 +11,6 @@ This project has implemented simple express based **NodeJS** static server:
 ```sh
 git clone https://github.com/Zazzik1/Mandelbrot
 cd Mandelbrot
-git checkout nodejs
 npm ci # installation of dependencies
 ```
 #### Run:
