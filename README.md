@@ -1,4 +1,4 @@
-# Mandelbrot
+# [Mandelbrot](https://zazzik1.github.io/Mandelbrot/static/)
 Interactive representation of the [Mandelbrot series](https://en.wikipedia.org/wiki/Mandelbrot_set) using Javascript, Web Workers and HTML Canvas element. Thanks to the multiprocessing, it allows for quick obtaining of high-resolution fractals.
 
 <p align="center">
