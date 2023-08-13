@@ -37,14 +37,14 @@ jobs:
         run: npm test
   
   build:
-    steps: ubuntu-latest
+    runs-on: ubuntu-latest
     needs: pass-tests
     steps:
       - name: Create build
         run: npm run build
 
   release:
-    steps: ubuntu-latest
+    runs-on: ubuntu-latest
     needs: [ pass-tests, build ]
     steps:
       - name: Generate release tag
