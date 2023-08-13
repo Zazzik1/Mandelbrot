@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  pass-tests:
+  pass-tests-and-release:
     runs-on: ubuntu-latest
     strategy:
       matrix:
