@@ -15,6 +15,7 @@ const INPUTS = {
     Y1: document.querySelector("#y1") as HTMLInputElement,
     ITER: document.querySelector("#iter") as HTMLInputElement,
     CSIZE: document.querySelector("#cSize") as HTMLInputElement,
+    COLOR_OFFSET: document.querySelector("#color-offset") as HTMLInputElement,
 }
 
 const input = {
@@ -41,7 +42,7 @@ function draw() {
 }
 
 function reset() {
-if (canvas == null) throw new Error('canvas is not defined');
+    if (canvas == null) throw new Error('canvas is not defined');
     input.set(INPUTS.LEN, 3);
     input.set(INPUTS.LEN2, 3 / canvas.width * canvas.height);
     input.set(INPUTS.X1, -2);
@@ -90,7 +91,11 @@ document.getElementById("zoom_plus")?.addEventListener("click", e => click(0.5, 
 document.getElementById("zoom_minus")?.addEventListener("click", e => click(0.5, 0.5, 0.5));
 document.getElementById("download")?.addEventListener("click", e => download());
 INPUTS.ITER.addEventListener("change", draw);
- 
+INPUTS.COLOR_OFFSET.addEventListener('change', () => {
+    mandelbrot.colorOffset = +INPUTS.COLOR_OFFSET.value;
+    draw();
+}) 
+
 INPUTS.CSIZE.addEventListener("change", () => {
     let [width, height] = INPUTS.CSIZE.value.split("x");
     canvas.width = +width;
