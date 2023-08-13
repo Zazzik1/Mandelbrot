@@ -37,12 +37,14 @@ jobs:
         run: npm test
   
   build:
+    steps: ubuntu-latest
     needs: pass-tests
     steps:
       - name: Create build
         run: npm run build
 
   release:
+    steps: ubuntu-latest
     needs: [ pass-tests, build ]
     steps:
       - name: Generate release tag
@@ -92,10 +94,10 @@ jobs:
         uses: actions/upload-pages-artifact@v2
 
   deploy-to-gh-pages:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     needs: build-for-gh-pages
     steps:
       - name: Deploy to GitHub Pages
