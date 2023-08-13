@@ -21,12 +21,9 @@
     "url": "https://github.com/Zazzik1/Mandelbrot/issues"
   },
   "homepage": "https://github.com/Zazzik1/Mandelbrot#readme",
-  "dependencies": {
-    "@types/jest": "^29.5.3",
-    "express": "^4.17.1",
-    "path": "^0.12.7"
-  },
   "devDependencies": {
+    "@types/jest": "^29.5.3",
+    "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.3",
     "install": "^0.13.0",
