@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  tests:
+  pass-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -36,8 +36,8 @@ jobs:
       - name: Run tests
         run: npm test
   
-  build: pass-tests
-    needs:  
+  build:
+    needs: pass-tests
     steps:
       - name: Create build
         run: npm run build
