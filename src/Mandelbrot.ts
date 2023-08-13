@@ -1,36 +1,27 @@
-// Author: Zazzik1
+import { DEFAULT_RGB } from "./constants";
+import { RGBColorPalette, Task } from "./types";
+import MandelbrotWorker from "./workers/mandelbrot.worker";
+
 export default class Mandelbrot {
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+    done?: Function;
+    task?: Task;
     iterations = 120;
 	lastTimeout = null;
     workersNumber = 16;
-    workersFinished = [];
-    workers = [];
-    rgb = [
-        [66, 30, 15],
-        [25, 7, 26],
-        [9, 1, 47],
-        [4, 4, 73],
-        [0, 7, 100],
-        [12, 44, 138],
-        [24, 82, 177],
-        [57, 125, 209],
-        [134, 181, 229],
-        [211, 236, 248],
-        [241, 233, 191],
-        [248, 201, 95],
-        [255, 170, 0],
-        [204, 128, 0],
-        [153, 87, 0],
-        [106, 52, 3]
-    ];
-    constructor(canvas, doneCallback) {
-        if (canvas) {
-            this.canvas = canvas;
-            this.ctx = canvas.getContext("2d");
-            this.done = doneCallback;
-        } else throw "Error: canvas was not provided";
+    workersFinished: boolean[] = [];
+    workers: Worker[] = [];
+    rgb: RGBColorPalette = DEFAULT_RGB;
+    constructor(canvas: HTMLCanvasElement, doneCallback?: Function) {
+        if (!canvas) throw new Error("canvas was not provided")
+        this.canvas = canvas;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error('ctx == null');
+        this.ctx = ctx
+        this.done = doneCallback;
     }
-    drawOnCanvas(x1, y1, x2, y2){
+    drawOnCanvas(x1: number, y1: number, x2: number, y2: number){
         if(!this.workersFinished.every(w => w)) this.removeWorkers();
         this.task = {
             x1: x1,
@@ -41,7 +32,7 @@ export default class Mandelbrot {
             h: this.canvas.height,
             da: (x2 - x1) / this.canvas.width,
             db: (y2 - y1) / this.canvas.height,
-            iterations: this.iterations
+            iterations: this.iterations,
         }
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.task.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
@@ -51,7 +42,7 @@ export default class Mandelbrot {
             this.workersFinished[i] = false;
         }
         for(let i=0; i<this.workersNumber; i++){
-            let w = new Worker('./js/mandelbrotWorker.js');
+            let w = new MandelbrotWorker() as Worker;
             w.postMessage([this.task, i, linesForOneWorker, this.canvas.height* i/this.workersNumber, this.rgb])
             w.addEventListener("message", e => {
                 if(e.data.action == "finish") {
@@ -68,7 +59,7 @@ export default class Mandelbrot {
         this.workers.forEach(w => w.terminate());
         this.workers = [];
     }
-    drawLine(y, line){
+    drawLine(y: number, line: ImageData){
         this.ctx.putImageData(line, 0, y)
     }
     tryToFinish(){

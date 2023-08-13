@@ -1,6 +1,14 @@
 // Author: Zazzik1
+import { RGBColorPalette, Task } from "../types";
+import { isInSet } from "../utils/utils";
+
 class MandelbrotWorker {
-    constructor(task, id, linesToDo, startingLine, rgb) {
+    id: number;
+    task: Task;
+    linesToDo: number;
+    startingLine: number;
+    rgb: RGBColorPalette;
+    constructor(task: Task, id: number, linesToDo: number, startingLine: number, rgb: RGBColorPalette) {
         this.id = id;
         this.task = task;
         this.linesToDo = linesToDo;
@@ -8,15 +16,8 @@ class MandelbrotWorker {
         this.rgb = rgb;
         this._runLoop()
     }
-    isInSet(a, b) { //decides if the given point (a+bi) belongs to the Mandelbrot series: returns nothing when belongs or no. of iterations in other case
-        let aa, bb;
-        aa = bb = 0;
-        for (let i = 1; i <= this.task.iterations; i++) { //z' = z^2 + (a+bi)
-            let at = aa ** 2 - (bb ** 2) + a;
-            bb = 2 * aa * bb + b;
-            aa = at;
-            if (Math.sqrt(aa ** 2 + (bb ** 2)) > 2) return i // diverges
-        }
+    isInSet(a: number, b: number) {
+        return isInSet(a, b, this.task.iterations);
     }
     _runLoop = (line = this.startingLine) => {
         if (line < this.startingLine + this.linesToDo){
@@ -34,16 +35,17 @@ class MandelbrotWorker {
             id: this.id 
         });
     }
-    calculateLine(y){
+    calculateLine(y: number){
         let task = this.task;
         let line = new ImageData(task.w, 1);
+        let c: [number, number, number];
         for(let x = 0; x < task.w*4; x+=4){
             let diverge = this.isInSet(task.x1 + (x/4 * task.da), task.y1 + (y * task.db));
             if (!diverge) { 
-                var c = [0, 0, 0]; //point belongs to the set
+                c = [0, 0, 0]; //point belongs to the set
             } else { 
                 let color = diverge % this.rgb.length;
-                var c = this.rgb[color]; //colors outer points
+                c = this.rgb[color]; //colors outer points
             }
             line.data[x] = c[0];
             line.data[x+1] = c[1];
@@ -54,6 +56,10 @@ class MandelbrotWorker {
     }
 }
 
-onmessage = e => {
+const ctx: Worker = self as any;
+
+ctx.onmessage = e => {
     new MandelbrotWorker(e.data[0], e.data[1], e.data[2], e.data[3], e.data[4]);
 }
+
+export default null as any;
