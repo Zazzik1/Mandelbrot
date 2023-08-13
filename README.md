@@ -1,4 +1,4 @@
-# [Mandelbrot](https://zazzik1.github.io/Mandelbrot/static/)
+# Link to the preview: [Mandelbrot](https://zazzik1.github.io/Mandelbrot/)
 Interactive representation of the [Mandelbrot series](https://en.wikipedia.org/wiki/Mandelbrot_set) using Javascript, Web Workers and HTML Canvas element. Thanks to the multiprocessing, it allows for quick obtaining of high-resolution fractals.
 
 <p align="center">
@@ -6,18 +6,21 @@ Interactive representation of the [Mandelbrot series](https://en.wikipedia.org/w
 </p>
 
 # How to use?
-This project has implemented simple express based **NodeJS** static server:
-#### Installation:
+
+### Installation:
 ```sh
 git clone https://github.com/Zazzik1/Mandelbrot
 cd Mandelbrot
 npm ci # installation of dependencies
 ```
-#### Run:
+### Run (development mode):
 ```sh
-npm start
+npm run dev
 ```
-After that you can navigate to the following address in your browser: 
+After that you can navigate to the following address and see the live reload: [http://localhost:4000](http://localhost:4000/).
+
+### Build:
 ```sh
-127.0.0.1:8000
+npm run build
 ```
+This command generates files in the `./build` directory, which must be hosted as static files by any static server, e.g by using `npx serve` or `python3 -m http.server` commands.
