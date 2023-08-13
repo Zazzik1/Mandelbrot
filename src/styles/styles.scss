@@ -15,34 +15,38 @@ canvas {
 	cursor: pointer;
 	margin-left: 2px;
 }
-div.toolbox {
-	display: inline-block;
-	border: 3px solid var(--color);
-	border-radius: 10px;
-	padding: 5px;
-	box-shadow: 0 0 6px 6px rgba(255, 255, 255, 0.2);
-	margin: 8px 2px;
-}
-div.toolbox input, div.toolbox select {
-	outline: none;
-	background-color:white;
-	border: 0;
-	padding: 4px 10px;
-	border-radius: 12px;
-	margin: 4px 1px;
-	font-family: Helvetica;
-	cursor: pointer;
-	transition: background-color 0.7s var(--bezier), color 0.7s var(--bezier);
-}
-div.toolbox select {
-	padding: 3px 4px;
-	border-radius: 0px;
-}
+div {
+	&.toolbox {
+		display: inline-block;
+		border: 3px solid var(--color);
+		border-radius: 10px;
+		padding: 5px;
+		box-shadow: 0 0 6px 6px rgba(255, 255, 255, 0.2);
+		margin: 8px 2px;
 
-div.toolbox input:hover {
-	color: rgb(56, 36, 80);
-	background-color:rgb(140, 184, 250);
-}
-div.toolbox span {
-	font-size: 0.8em;
+		input, select {
+			outline: none;
+			background-color:white;
+			border: 0;
+			padding: 4px 10px;
+			border-radius: 12px;
+			margin: 4px 1px;
+			font-family: Helvetica;
+			cursor: pointer;
+			transition: background-color 0.7s var(--bezier), color 0.7s var(--bezier);
+		}
+		select {
+			padding: 3px 4px;
+			border-radius: 0px;
+		}
+		
+		input:hover {
+			color: rgb(56, 36, 80);
+			background-color:rgb(140, 184, 250);
+		}
+		
+		span {
+			font-size: 0.8em;
+		}
+	}
 }
