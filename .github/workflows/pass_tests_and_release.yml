@@ -64,6 +64,9 @@ jobs:
           asset_name: build-v.${{ steps.generate_release_tag.outputs.release_tag }}.zip
           asset_content_type: application/zip
         
+      - name: Prepare _site directory
+        run: cp -r build _site
+
       - name: Upload gh pages artifact
         uses: actions/upload-pages-artifact@v2
 
