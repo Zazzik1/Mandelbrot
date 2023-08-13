@@ -3,63 +3,69 @@ import { RGBColorPalette, Task } from "../types";
 import { isInSet } from "../utils/utils";
 
 class MandelbrotWorker {
-    id: number;
-    task: Task;
-    linesToDo: number;
-    startingLine: number;
-    rgb: RGBColorPalette;
+    protected id: number;
+    protected task: Task;
+    protected linesToDo: number;
+    protected startingLine: number;
+    protected rgb: RGBColorPalette;
+    protected isRunning: boolean = false;
+
     constructor(task: Task, id: number, linesToDo: number, startingLine: number, rgb: RGBColorPalette) {
         this.id = id;
         this.task = task;
         this.linesToDo = linesToDo;
         this.startingLine = startingLine;
         this.rgb = rgb;
-        this._runLoop()
     }
-    isInSet(a: number, b: number) {
-        return isInSet(a, b, this.task.iterations);
+    public run() {
+        if (this.isRunning) return;
+
+        this.isRunning = true
+        this._runLoop();
     }
-    _runLoop = (line = this.startingLine) => {
-        if (line < this.startingLine + this.linesToDo){
-            self.postMessage({ 
-                action: "drawLine", 
-                line: this.calculateLine(line),
-                y: line
-            });
-            setTimeout(this._runLoop, 0, line + 1)
-        } else this.finish();
+    protected _runLoop = (line = this.startingLine) => {
+        if (line >= this.startingLine + this.linesToDo) return this.finish();
+        
+        ctx.postMessage({ 
+            action: "drawLine", 
+            line: this.calculateLine(line),
+            y: line
+        });
+        setTimeout(this._runLoop, 0, line + 1)
     }
-    finish(){
-        self.postMessage({
+    protected finish() {
+        ctx.postMessage({
             action: "finish", 
             id: this.id 
         });
     }
-    calculateLine(y: number){
-        let task = this.task;
-        let line = new ImageData(task.w, 1);
+    protected calculateLine(y: number): ImageData {
+        const { x1, y1, da, db, iterations, w } = this.task;
+        const line = new ImageData(w, 1);
         let c: [number, number, number];
-        for(let x = 0; x < task.w*4; x+=4){
-            let diverge = this.isInSet(task.x1 + (x/4 * task.da), task.y1 + (y * task.db));
+        for(let x = 0; x < w*4; x+=4){
+            let diverge = isInSet(x1 + (x/4 * da), y1 + (y * db), iterations);
             if (!diverge) { 
-                c = [0, 0, 0]; //point belongs to the set
+                c = [0, 0, 0]; // point belongs to the set
             } else { 
                 let color = diverge % this.rgb.length;
-                c = this.rgb[color]; //colors outer points
+                c = this.rgb[color]; // colors outer points
             }
             line.data[x] = c[0];
             line.data[x+1] = c[1];
             line.data[x+2] = c[2];
-            line.data[x+3] = 255;
+            line.data[x+3] = 255; // alpha
         }
         return line;
     }
 }
 
-const ctx: Worker = self as any;
+var ctx: Worker = self as any;
 
 ctx.onmessage = e => {
-    new MandelbrotWorker(e.data[0], e.data[1], e.data[2], e.data[3], e.data[4]);
+    const [task, id, linesToDo, startingLine, rgb] = e.data;
+    const worker = new MandelbrotWorker(task, id, linesToDo, startingLine, rgb);
+    worker.run();
 }
 
 export default null as any;

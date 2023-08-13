@@ -18,3 +18,10 @@ export const DEFAULT_RGB: RGBColorPalette = [
     [153, 87, 0],
     [106, 52, 3]
 ];
+
+export enum ZOOM_MULTIPLIER {
+    CLICK_ZOOM_IN = 2,
+    CLICK_ZOOM_OUT = 0.5,
+    SCROLL_ZOOM_IN = 1.4,
+    SCROLL_ZOOM_OUT = 1 / 1.4,
+}

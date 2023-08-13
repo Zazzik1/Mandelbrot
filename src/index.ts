@@ -1,11 +1,12 @@
 import Mandelbrot from "./Mandelbrot";
+import { ZOOM_MULTIPLIER } from "./constants";
 import './styles/styles';
 
-let canvas = document.querySelector("#c") as HTMLCanvasElement;
-let wheel = document.getElementById("wheel") as HTMLInputElement;
-var mandelbrot = new Mandelbrot(canvas);
-window.mandelbrot = mandelbrot;
-mandelbrot.drawOnCanvas(-2, -1.5, 1, 1.5); //x1, y1, x2, y2
+const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
+const wheel = document.querySelector("#wheel") as HTMLInputElement;
+const mandelbrot = new Mandelbrot(canvas);
+if (process.env.NODE_ENV === 'development') window.mandelbrot = mandelbrot;
+mandelbrot.draw(-2, -1.5, 1, 1.5); //x1, y1, x2, y2
 
 const INPUTS = {
     LEN: document.querySelector("#len") as HTMLInputElement, //width
@@ -16,7 +17,7 @@ const INPUTS = {
     CSIZE: document.querySelector("#cSize") as HTMLInputElement,
 }
 
-let input = {
+const input = {
     get(element: HTMLInputElement) {
         return +element.value
     },
@@ -26,13 +27,9 @@ let input = {
 }
 
 function draw() {
-    console.log('draw');
     let len = input.get(INPUTS.LEN);
     let len2 = input.get(INPUTS.LEN2);
-    if (len <= 0 && len2 <= 0) {
-        alert("Width should be > 0");
-        return
-    };
+    if (len <= 0 && len2 <= 0) return alert("Width should be > 0");
     if (input.get(INPUTS.ITER) <= 0) {
         alert("iterations are <= 0, corrected to 40");
         input.set(INPUTS.ITER, 40)
@@ -40,7 +37,7 @@ function draw() {
     let x1 = input.get(INPUTS.X1);
     let y1 = input.get(INPUTS.Y1);
     mandelbrot.iterations = input.get(INPUTS.ITER);
-    mandelbrot.drawOnCanvas(x1, y1, x1 + len, y1 + len2);
+    mandelbrot.draw(x1, y1, x1 + len, y1 + len2);
 }
 
 function reset() {
@@ -52,7 +49,7 @@ if (canvas == null) throw new Error('canvas is not defined');
     draw();
 }
  
-function click(rX: number, rY: number, mult: number = 2) { //0-1 fraction
+function click(rX: number, rY: number, mult: ZOOM_MULTIPLIER = ZOOM_MULTIPLIER.CLICK_ZOOM_IN) {
     let x = input.get(INPUTS.X1);
     let y = input.get(INPUTS.Y1);
     input.set(INPUTS.LEN, input.get(INPUTS.LEN) / mult);
@@ -65,7 +62,7 @@ function click(rX: number, rY: number, mult: number = 2) { //0-1 fraction
 }
  
 function download() {
-    var link = document.createElement('a');
+    const link = document.createElement('a');
     link.download = 'mandelbrot.png';
     link.href = canvas.toDataURL("image/png", 1.0); // type, quality
     link.click();
@@ -73,9 +70,8 @@ function download() {
  
 // event listeners
 canvas.addEventListener("mousedown", e => {
-    if (e.button == 0) {
-        click(e.offsetX / canvas.width, e.offsetY / canvas.height);
-    } else if (e.button == 2) click(e.offsetX / canvas.width, e.offsetY / canvas.height, 0.5);
+    if (e.button == 0) return click(e.offsetX / canvas.width, e.offsetY / canvas.height, ZOOM_MULTIPLIER.CLICK_ZOOM_IN);
+    if (e.button == 2) return click(e.offsetX / canvas.width, e.offsetY / canvas.height, ZOOM_MULTIPLIER.CLICK_ZOOM_OUT);
 });
  
 canvas.addEventListener("wheel", e => {
@@ -84,8 +80,8 @@ canvas.addEventListener("wheel", e => {
         return false
     }
     if(e.deltaY > 0) {
-        click(e.offsetX / canvas.width, e.offsetY / canvas.height, 1.4);
-    } else if(e.deltaY < 0) click(e.offsetX / canvas.width, e.offsetY / canvas.height, 1/1.4);
+        click(e.offsetX / canvas.width, e.offsetY / canvas.height, ZOOM_MULTIPLIER.SCROLL_ZOOM_IN);
+    } else if(e.deltaY < 0) click(e.offsetX / canvas.width, e.offsetY / canvas.height, ZOOM_MULTIPLIER.SCROLL_ZOOM_OUT);
 });
 
 canvas.addEventListener("contextmenu", e => e.preventDefault());
@@ -96,9 +92,9 @@ document.getElementById("download")?.addEventListener("click", e => download());
 INPUTS.ITER.addEventListener("change", draw);
  
 INPUTS.CSIZE.addEventListener("change", () => {
-    let size = INPUTS.CSIZE.value.split("x");
-    canvas.width = +size[0];
-    canvas.height = +size[1];
+    let [width, height] = INPUTS.CSIZE.value.split("x");
+    canvas.width = +width;
+    canvas.height = +height;
     input.set(INPUTS.LEN2, input.get(INPUTS.LEN) / canvas.width * canvas.height);
     draw();
 });

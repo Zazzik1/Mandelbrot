@@ -16,5 +16,5 @@ export interface Task {
 export type RGBColorPalette = [number, number, number][];
 
 declare global {
-    interface Window { mandelbrot: Mandelbrot }
+    interface Window { mandelbrot?: Mandelbrot }
 }
