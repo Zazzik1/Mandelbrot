@@ -1,7 +1,8 @@
 import Mandelbrot from "./Mandelbrot";
-import { ZOOM_MULTIPLIER } from "./constants";
+import { CANVAS_SIZES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "./constants";
 import './styles/styles';
 
+const iterationsDatalist = document.querySelector('#iterations') as HTMLSelectElement;
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 const wheel = document.querySelector("#wheel") as HTMLInputElement;
 const mandelbrot = new Mandelbrot(canvas);
@@ -69,6 +70,20 @@ function download() {
     link.download = 'mandelbrot.png';
     link.href = canvas.toDataURL("image/png", 1.0); // type, quality
     link.click();
+}
+
+// set datalist / select contents
+for (let iterations of SUGGESTED_ITERATIONS) {
+    const option = document.createElement('option');
+    option.value = iterations.toString();
+    iterationsDatalist.appendChild(option)
+}
+
+for (let { name, value } of CANVAS_SIZES) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = name;
+    INPUTS.CSIZE.appendChild(option);
 }
  
 // event listeners

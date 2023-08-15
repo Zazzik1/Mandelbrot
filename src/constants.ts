@@ -19,9 +19,24 @@ export const DEFAULT_RGB: RGBColorPalette = [
     [106, 52, 3]
 ];
 
+export const SUGGESTED_ITERATIONS = [5, 20, 40, 120, 200, 500, 800, 1000, 1200, 1400, 2000,  2500, 3000, 3500, 4000, 4500, 5000];
+export const CANVAS_SIZES = [
+    { name: '400x400', value: '400x400' },
+    { name: '500x500', value: '500x500' },
+    { name: '600x600', value: '600x600' },
+    { name: '700x700', value: '700x700' },
+    { name: '800x800', value: '800x800' },
+    { name: '400x400', value: '400x400' },
+    { name: '360x640', value: '360x640' },
+    { name: '640x480', value: '640x480' },
+    { name: '1280x720 HD', value: '1280x720' },
+    { name: '1920x1080 Full HD', value: '1920x1080' },
+    { name: '3840x2160 4K', value: '3840x2160' },
+]
+
 export enum ZOOM_MULTIPLIER {
     CLICK_ZOOM_IN = 2,
     CLICK_ZOOM_OUT = 0.5,
-    SCROLL_ZOOM_IN = 1.4,
-    SCROLL_ZOOM_OUT = 1 / 1.4,
+    SCROLL_ZOOM_IN = 1.3,
+    SCROLL_ZOOM_OUT = 1 / 1.3,
 }
