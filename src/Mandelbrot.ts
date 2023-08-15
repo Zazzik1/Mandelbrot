@@ -12,6 +12,7 @@ export default class Mandelbrot {
     protected workersFinished: boolean[] = [];
     protected workers: Worker[] = [];
     protected rgb: RGBColorPalette = DEFAULT_RGB;
+    public colorOffset: number = 0;
     
     constructor(canvas: HTMLCanvasElement, doneCallback?: Function) {
         if (!canvas) throw new Error("canvas was not provided")
@@ -35,6 +36,7 @@ export default class Mandelbrot {
             da: (x2 - x1) / width,
             db: (y2 - y1) / height,
             iterations: this.iterations,
+            colorOffset: this.colorOffset,
             imageData: this.ctx.getImageData(0, 0, width, height),
         }
         this.workersFinished = Array(this.workersNumber);

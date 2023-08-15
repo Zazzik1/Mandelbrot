@@ -15,6 +15,7 @@ const INPUTS = {
     Y1: document.querySelector("#y1") as HTMLInputElement,
     ITER: document.querySelector("#iter") as HTMLInputElement,
     CSIZE: document.querySelector("#cSize") as HTMLInputElement,
+    COLOR_OFFSET: document.querySelector("#color-offset") as HTMLInputElement,
 }
 
 const input = {
@@ -37,15 +38,17 @@ function draw() {
     let x1 = input.get(INPUTS.X1);
     let y1 = input.get(INPUTS.Y1);
     mandelbrot.iterations = input.get(INPUTS.ITER);
+    mandelbrot.colorOffset = +input.get(INPUTS.COLOR_OFFSET);
     mandelbrot.draw(x1, y1, x1 + len, y1 + len2);
 }
 
 function reset() {
-if (canvas == null) throw new Error('canvas is not defined');
+    if (canvas == null) throw new Error('canvas is not defined');
     input.set(INPUTS.LEN, 3);
     input.set(INPUTS.LEN2, 3 / canvas.width * canvas.height);
     input.set(INPUTS.X1, -2);
     input.set(INPUTS.Y1, -1.5);
+    input.set(INPUTS.COLOR_OFFSET, 0);
     draw();
 }
  
@@ -60,7 +63,7 @@ function click(rX: number, rY: number, mult: ZOOM_MULTIPLIER = ZOOM_MULTIPLIER.C
     input.set(INPUTS.Y1, rY * len2 * mult + y - (len2 / 2));
     draw();
 }
- 
+
 function download() {
     const link = document.createElement('a');
     link.download = 'mandelbrot.png';
@@ -75,13 +78,13 @@ canvas.addEventListener("mousedown", e => {
 });
  
 canvas.addEventListener("wheel", e => {
-    if(!wheel.checked) {
-        e.preventDefault();
-        return false
-    }
-    if(e.deltaY > 0) {
+    e.preventDefault();
+    e.stopPropagation();
+    if(!wheel.checked) return;
+
+    if(e.deltaY < 0) {
         click(e.offsetX / canvas.width, e.offsetY / canvas.height, ZOOM_MULTIPLIER.SCROLL_ZOOM_IN);
-    } else if(e.deltaY < 0) click(e.offsetX / canvas.width, e.offsetY / canvas.height, ZOOM_MULTIPLIER.SCROLL_ZOOM_OUT);
+    } else click(e.offsetX / canvas.width, e.offsetY / canvas.height, ZOOM_MULTIPLIER.SCROLL_ZOOM_OUT);
 });
 
 canvas.addEventListener("contextmenu", e => e.preventDefault());
@@ -90,7 +93,8 @@ document.getElementById("zoom_plus")?.addEventListener("click", e => click(0.5, 
 document.getElementById("zoom_minus")?.addEventListener("click", e => click(0.5, 0.5, 0.5));
 document.getElementById("download")?.addEventListener("click", e => download());
 INPUTS.ITER.addEventListener("change", draw);
- 
+INPUTS.COLOR_OFFSET.addEventListener('change', draw);
+
 INPUTS.CSIZE.addEventListener("change", () => {
     let [width, height] = INPUTS.CSIZE.value.split("x");
     canvas.width = +width;

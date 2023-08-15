@@ -40,7 +40,7 @@ class MandelbrotWorker {
         });
     }
     protected calculateLine(y: number): ImageData {
-        const { x1, y1, da, db, iterations, w } = this.task;
+        const { x1, y1, da, db, iterations, w, colorOffset } = this.task;
         const line = new ImageData(w, 1);
         let c: [number, number, number];
         for(let x = 0; x < w*4; x+=4){
@@ -48,7 +48,7 @@ class MandelbrotWorker {
             if (!diverge) { 
                 c = [0, 0, 0]; // point belongs to the set
             } else { 
-                let color = diverge % this.rgb.length;
+                let color = (diverge + colorOffset) % this.rgb.length;
                 c = this.rgb[color]; // colors outer points
             }
             line.data[x] = c[0];

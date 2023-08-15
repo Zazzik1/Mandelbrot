@@ -11,6 +11,7 @@ export interface Task {
     db: number;
     iterations: number;
     imageData?: ImageData;
+    colorOffset: number,
 }
 
 export type RGBColorPalette = [number, number, number][];
