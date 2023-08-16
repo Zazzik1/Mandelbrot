@@ -1,6 +1,5 @@
-// Author: Zazzik1
-import { RGBColorPalette, Task } from "../types";
-import { isInSet } from "../utils/utils";
+import { RGBColorPalette, Task } from "~/types";
+import { isInSet } from "~/utils/utils";
 
 class MandelbrotWorker {
     protected id: number;

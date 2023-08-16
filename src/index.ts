@@ -1,6 +1,6 @@
-import Mandelbrot from "./Mandelbrot";
-import { CANVAS_SIZES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "./constants";
-import './styles/styles';
+import Mandelbrot from "~/Mandelbrot";
+import { CANVAS_SIZES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
+import '~/styles/styles';
 
 const iterationsDatalist = document.querySelector('#iterations') as HTMLSelectElement;
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;

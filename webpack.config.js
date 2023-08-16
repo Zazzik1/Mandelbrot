@@ -54,6 +54,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.js', '.scss'],
+    alias: {
+      '~': path.resolve(__dirname, 'src'),
+    }
   },
   output: {
     filename: 'bundle.js',

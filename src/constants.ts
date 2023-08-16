@@ -1,4 +1,4 @@
-import { RGBColorPalette } from "./types";
+import { RGBColorPalette } from "~/types";
 
 export const DEFAULT_RGB: RGBColorPalette = [
     [66, 30, 15],
