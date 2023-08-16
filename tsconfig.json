@@ -8,6 +8,9 @@
     "moduleResolution": "NodeNext",
     "types": [
       "jest"
-    ]
+    ],
+    "paths": {
+      "~/*": ["./src/*"],
+    }
   },
 }

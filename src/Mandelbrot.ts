@@ -1,6 +1,6 @@
-import { DEFAULT_RGB } from "./constants";
-import { RGBColorPalette, Task } from "./types";
-import MandelbrotWorker from "./workers/mandelbrot.worker";
+import { DEFAULT_RGB } from "~/constants";
+import { RGBColorPalette, Task } from "~/types";
+import MandelbrotWorker from "~/workers/mandelbrot.worker";
 
 export default class Mandelbrot {
     protected canvas: HTMLCanvasElement;

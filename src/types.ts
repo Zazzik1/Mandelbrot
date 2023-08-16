@@ -1,4 +1,4 @@
-import Mandelbrot from "./Mandelbrot";
+import Mandelbrot from "~/Mandelbrot";
 
 export interface Task {
     x1: number;
