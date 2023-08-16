@@ -45,6 +45,9 @@ function draw() {
     mandelbrot.iterations = input.get(INPUTS.ITER);
     mandelbrot.colorOffset = +input.get(INPUTS.COLOR_OFFSET);
     mandelbrot.draw(x1, y1, x1 + len, y1 + len2);
+    setTimeout(() => {
+        // mandelbrot.forceStopWorkers()
+    }, 500)
 }
 
 function reset() {
