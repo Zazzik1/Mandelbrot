@@ -33,6 +33,9 @@ jobs:
       - name: Create build
         run: npm run build
 
+      - name: Copy license
+        run: cp LICENSE build
+
       - name: Generate release tag
         id: generate_release_tag
         uses: alexvingg/next-release-tag@v1.0.4

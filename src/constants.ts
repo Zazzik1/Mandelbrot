@@ -26,7 +26,6 @@ export const CANVAS_SIZES = [
     { name: '600x600', value: '600x600' },
     { name: '700x700', value: '700x700' },
     { name: '800x800', value: '800x800' },
-    { name: '400x400', value: '400x400' },
     { name: '360x640', value: '360x640' },
     { name: '640x480', value: '640x480' },
     { name: '1280x720 HD', value: '1280x720' },
@@ -40,3 +39,6 @@ export enum ZOOM_MULTIPLIER {
     SCROLL_ZOOM_IN = 1.3,
     SCROLL_ZOOM_OUT = 1 / 1.3,
 }
+
+export const DEFAULT_WORKERS_NO = 32;
+export const DEFAULT_COLOR_OFFSET = 0;

@@ -1,18 +1,18 @@
-import { DEFAULT_RGB } from "~/constants";
-import { RGBColorPalette, Task } from "~/types";
+import { DEFAULT_COLOR_OFFSET, DEFAULT_RGB, DEFAULT_WORKERS_NO } from "~/constants";
+import { MandelbrotMessageData, MandelbrotWorkerMessageData, RGBColorPalette, Task } from "~/types";
 import MandelbrotWorker from "~/workers/mandelbrot.worker";
 
 export default class Mandelbrot {
     protected canvas: HTMLCanvasElement;
     protected ctx: CanvasRenderingContext2D;
     protected done?: Function;
-    protected task?: Task;
     public iterations: number = 120;
-    protected workersNumber = 16;
+    protected workersNo = DEFAULT_WORKERS_NO;
     protected workersFinished: boolean[] = [];
     protected workers: Worker[] = [];
     protected rgb: RGBColorPalette = DEFAULT_RGB;
-    public colorOffset: number = 0;
+    public colorOffset: number = DEFAULT_COLOR_OFFSET;
+    protected isRunning: boolean = false;
     
     constructor(canvas: HTMLCanvasElement, doneCallback?: Function) {
         if (!canvas) throw new Error("canvas was not provided")
@@ -21,55 +21,90 @@ export default class Mandelbrot {
         if (!ctx) throw new Error('ctx == null');
         this.ctx = ctx
         this.done = doneCallback;
+
+        for(let i=0; i < this.workersNo; i++){
+            this.workersFinished[i] = false;
+            let worker = new MandelbrotWorker() as Worker;
+            worker.addEventListener("message", e => {
+                const data = e.data as MandelbrotMessageData;
+                if(data.type == "finish") {
+                    this.workersFinished[i] = true;
+                    this.tryToFinish();
+                } else if(data.type == "draw_line") {
+                    const { y, lineBuffer } = data.payload;
+                    this.drawLine(y, lineBuffer);
+                }
+            });
+            this.workers.push(worker);
+        }
     }
-    public draw(x1: number, y1: number, x2: number, y2: number) {
+    public async draw(x1: number, y1: number, x2: number, y2: number) {
         const { width, height } = this.canvas;
-        if (this.workersFinished.includes(false)) this.removeWorkers();
+        if (this.isRunning) await this.forceStopWorkers();
         this.ctx.clearRect(0, 0, width, height);
-        this.task = {
+        this.isRunning = true;
+
+        const task: Task = {
             x1: x1,
             y1: y1,
             x2: x2,
             y2: y2,
-            w: width,
-            h: height,
+            width,
+            height,
             da: (x2 - x1) / width,
             db: (y2 - y1) / height,
             iterations: this.iterations,
             colorOffset: this.colorOffset,
-            imageData: this.ctx.getImageData(0, 0, width, height),
         }
-        this.workersFinished = Array(this.workersNumber);
-        const linesForOneWorker = height / this.workersNumber;
-        for(let i=0; i<this.workersNumber; i++){
+
+        const { workersNo } = this;
+        this.workers.forEach((worker, i) => {
             this.workersFinished[i] = false;
-            let w = new MandelbrotWorker() as Worker;
-            w.postMessage([this.task, i, linesForOneWorker, height* i/this.workersNumber, this.rgb])
-            w.addEventListener("message", e => {
-                if(e.data.action == "finish") {
-                    this.workersFinished[e.data.id] = true;
-                    this.tryToFinish();
-                } else if(e.data.action == "drawLine") {
-                    this.drawLine(e.data.y, e.data.line);
+            const message: MandelbrotWorkerMessageData = {
+                type: 'calculate',
+                payload: {
+                    task: task,
+                    workerId: i,
+                    linesToDo: height / workersNo,
+                    startingLine: height * i / workersNo,
+                    rgb: this.rgb,
                 }
-            });
-            this.workers.push(w);
-        }
+            }
+            worker.postMessage(message);
+        })
     }
 
-    protected removeWorkers() {
-        this.workers.forEach(w => w.terminate());
-        this.workers = [];
+    public forceStopWorkers() {
+        return new Promise<void>(resolve => {
+            const message: MandelbrotWorkerMessageData = { type: 'force_stop' };
+            this.workers.forEach(worker => worker.postMessage(message));
+            let timeout: ReturnType<typeof setTimeout>;
+            const loop = () => {
+                if (this.areAllWorkersFinished()) {
+                    clearTimeout(timeout);
+                    resolve();
+                    return;
+                }
+                timeout = setTimeout(loop);
+            }
+            loop();
+        })
     }
     
-    public drawLine(y: number, line: ImageData) {
+    public drawLine(y: number, lineBuffer: ArrayBufferLike) {
+        const line = new ImageData(new Uint8ClampedArray(lineBuffer), this.canvas.width, 1);
         this.ctx.putImageData(line, 0, y)
+    }
+
+    public areAllWorkersFinished() {
+        return !this.workersFinished.includes(false);
     }
     
     protected tryToFinish() {
-        if (this.workersFinished.includes(false)) return;
-
-        this.removeWorkers();
-        if(typeof this.done === "function") this.done();
+        if (typeof this.done !== "function") return;
+        if (this.areAllWorkersFinished()) {
+            this.isRunning = false;
+            this.done();
+        }
     }
 }

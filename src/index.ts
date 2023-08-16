@@ -138,9 +138,9 @@ function addListeners() {
     });
      
     canvas.addEventListener("wheel", e => {
+        if(!wheel.checked) return;
         e.preventDefault();
         e.stopPropagation();
-        if(!wheel.checked) return;
     
         if(e.deltaY < 0) {
             click(e.offsetX / canvas.width, e.offsetY / canvas.height, ZOOM_MULTIPLIER.SCROLL_ZOOM_IN);

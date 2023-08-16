@@ -5,12 +5,11 @@ export interface Task {
     y1: number;
     x2: number;
     y2: number;
-    w: number;
-    h: number;
+    width: number;
+    height: number;
     da: number;
     db: number;
     iterations: number;
-    imageData?: ImageData;
     colorOffset: number,
 }
 
@@ -18,4 +17,30 @@ export type RGBColorPalette = [number, number, number][];
 
 declare global {
     interface Window { mandelbrot?: Mandelbrot }
+}
+
+export type CalculateActionPayload = {
+    task: Task,
+    workerId: number,
+    linesToDo: number,
+    startingLine: number,
+    rgb: RGBColorPalette,
+}
+
+export type RunningMandelbrotWorkerData = CalculateActionPayload & { isRunning: true };
+export type WorkerData = RunningMandelbrotWorkerData | { isRunning: false };
+
+export type MandelbrotWorkerMessageData = {
+    type: 'calculate',
+    payload: CalculateActionPayload,
+} | {
+    type: 'force_stop',
+}
+
+export type MandelbrotMessageData = { type: 'finish' } | {
+    type: 'draw_line',
+    payload: {
+        y: number,
+        lineBuffer: ArrayBufferLike,
+    }
 }
