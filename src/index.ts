@@ -1,11 +1,11 @@
 import Mandelbrot from "~/Mandelbrot";
-import { CANVAS_SIZES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
+import { CANVAS_SIZES, DOWNLOADED_FILE_NAME, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
 import '~/styles/styles';
 import StateManager from "~/utils/StateManager/StateManager";
 import URLSearchParamsStrategy from "~/utils/StateManager/strategies/URLSearchParamsStrategy";
-import { URLParamsState } from "./types";
+import { AppState } from "~/types";
 
-const stateManager = new StateManager<URLParamsState>(URLSearchParamsStrategy);
+const stateManager = new StateManager<AppState>(URLSearchParamsStrategy);
 const iterationsDatalist = document.querySelector('#iterations') as HTMLSelectElement;
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 const wheel = document.querySelector("#wheel") as HTMLInputElement;
@@ -77,19 +77,19 @@ function click(rX: number, rY: number, mult: ZOOM_MULTIPLIER = ZOOM_MULTIPLIER.C
 
 function download() {
     const link = document.createElement('a');
-    link.download = 'mandelbrot.png';
+    link.download = DOWNLOADED_FILE_NAME;
     link.href = canvas.toDataURL("image/png", 1.0); // type, quality
     link.click();
 }
 
 function updateState() {
     stateManager.setState({
-        'x1': input.get(INPUTS.X1).toString(),
-        'y1': input.get(INPUTS.Y1).toString(),
-        'x2': (input.get(INPUTS.X1) + input.get(INPUTS.LEN)).toString(),
-        'y2': (input.get(INPUTS.Y1) + input.get(INPUTS.LEN2)).toString(),
-        'i': input.get(INPUTS.ITER).toString(),
-        'colorOffset': input.get(INPUTS.COLOR_OFFSET).toString(),
+        x1: input.get(INPUTS.X1).toString(),
+        y1: input.get(INPUTS.Y1).toString(),
+        x2: (input.get(INPUTS.X1) + input.get(INPUTS.LEN)).toString(),
+        y2: (input.get(INPUTS.Y1) + input.get(INPUTS.LEN2)).toString(),
+        i: input.get(INPUTS.ITER).toString(),
+        colorOffset: input.get(INPUTS.COLOR_OFFSET).toString(),
     })
 }
 

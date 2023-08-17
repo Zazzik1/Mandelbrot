@@ -7,6 +7,15 @@ class StateManager<State extends {}> {
         this.strategy = new strategy();
     }
 
+    public setStrategy(strategy: new () => StateManagerStrategy<State>, transferState: boolean = false) {
+        if (transferState) {
+            const state = this.getState();
+            this.clearState();
+            this.strategy = new strategy();
+            this.setState(state);
+        } else this.strategy = new strategy();
+    }
+
     public clearState() {
         this.strategy.clearState();
     }

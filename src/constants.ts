@@ -42,3 +42,4 @@ export enum ZOOM_MULTIPLIER {
 
 export const DEFAULT_WORKERS_NO = 32;
 export const DEFAULT_COLOR_OFFSET = 0;
+export const DOWNLOADED_FILE_NAME = 'mandelbrot.png';

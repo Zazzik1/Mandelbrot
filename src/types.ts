@@ -45,7 +45,7 @@ export type MandelbrotMessageData = { type: 'finish' } | {
     }
 }
 
-export type URLParamsState = {
+export type AppState = {
     x1: string;
     x2: string;
     y1: string;

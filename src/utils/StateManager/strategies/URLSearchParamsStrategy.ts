@@ -7,7 +7,9 @@ class URLSearchParamsStrategy<State extends {}> extends StateManagerStrategy<Sta
     
     public setState(state: Partial<State>) {
         const params = new URLSearchParams(state as Record<string, string>);
-        window.history.pushState({}, '', `?${params.toString()}`);
+        let url = params.toString();
+        if (url.length) url = `?${url}`
+        window.history.pushState({}, '', url);
     }
     
     public getState(): Partial<State> {
