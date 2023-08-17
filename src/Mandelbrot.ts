@@ -58,7 +58,8 @@ export default class Mandelbrot {
         }
 
         const { workersNo } = this;
-        this.workers.forEach((worker, i) => {
+        for (let i = 0; i < workersNo; i++) {
+            let worker = this.workers[i];
             this.workersFinished[i] = false;
             const message: MandelbrotWorkerMessageData = {
                 type: 'calculate',
@@ -71,13 +72,17 @@ export default class Mandelbrot {
                 }
             }
             worker.postMessage(message);
-        })
+
+        }
     }
 
     public forceStopWorkers() {
         return new Promise<void>(resolve => {
             const message: MandelbrotWorkerMessageData = { type: 'force_stop' };
-            this.workers.forEach(worker => worker.postMessage(message));
+            for (let i = 0; i < this.workersNo; i++) {
+                let worker = this.workers[i];
+                worker.postMessage(message)
+            }
             let timeout: ReturnType<typeof setTimeout>;
             const loop = () => {
                 if (this.areAllWorkersFinished()) {
