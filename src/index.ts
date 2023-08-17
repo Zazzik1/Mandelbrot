@@ -1,7 +1,11 @@
 import Mandelbrot from "~/Mandelbrot";
 import { CANVAS_SIZES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
 import '~/styles/styles';
+import StateManager from "~/utils/StateManager/StateManager";
+import URLSearchParamsStrategy from "~/utils/StateManager/strategies/URLSearchParamsStrategy";
+import { URLParamsState } from "./types";
 
+const stateManager = new StateManager<URLParamsState>(URLSearchParamsStrategy);
 const iterationsDatalist = document.querySelector('#iterations') as HTMLSelectElement;
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 const wheel = document.querySelector("#wheel") as HTMLInputElement;
@@ -54,7 +58,7 @@ function reset() {
     input.set(INPUTS.X1, -2);
     input.set(INPUTS.Y1, -1.5);
     input.set(INPUTS.COLOR_OFFSET, 0);
-    clearURLParamsState();
+    stateManager.clearState();
     draw();
 }
  
@@ -67,7 +71,7 @@ function click(rX: number, rY: number, mult: ZOOM_MULTIPLIER = ZOOM_MULTIPLIER.C
     let len2 = input.get(INPUTS.LEN2);
     input.set(INPUTS.X1, rX * len * mult + x - (len / 2));
     input.set(INPUTS.Y1, rY * len2 * mult + y - (len2 / 2));
-    updateURLParamsState();
+    updateState();
     draw();
 }
 
@@ -78,29 +82,19 @@ function download() {
     link.click();
 }
 
-function clearURLParamsState() {
-    window.history.pushState({}, '', window.location.origin + window.location.pathname);
-}
-
-function updateURLParamsState() {
-    const params = new URLSearchParams(document.location.search);
-    params.set('x1', input.get(INPUTS.X1).toString());
-    params.set('y1', input.get(INPUTS.Y1).toString());
-    params.set('x2', (input.get(INPUTS.X1) + input.get(INPUTS.LEN)).toString());
-    params.set('y2', (input.get(INPUTS.Y1) + input.get(INPUTS.LEN2)).toString());
-    params.set('i', input.get(INPUTS.ITER).toString());
-    params.set('colorOffset', input.get(INPUTS.COLOR_OFFSET).toString());
-    window.history.pushState({}, '', `?${params.toString()}`);
+function updateState() {
+    stateManager.setState({
+        'x1': input.get(INPUTS.X1).toString(),
+        'y1': input.get(INPUTS.Y1).toString(),
+        'x2': (input.get(INPUTS.X1) + input.get(INPUTS.LEN)).toString(),
+        'y2': (input.get(INPUTS.Y1) + input.get(INPUTS.LEN2)).toString(),
+        'i': input.get(INPUTS.ITER).toString(),
+        'colorOffset': input.get(INPUTS.COLOR_OFFSET).toString(),
+    })
 }
 
 function loadInitialStateFromURLParams() {
-    const params = new URLSearchParams(document.location.search);
-    let i = params.get('i');
-    let x1 = params.get('x1');
-    let y1 = params.get('y1');
-    let x2 = params.get('x2');
-    let y2 = params.get('y2');
-    let colorOffset = params.get('colorOffset');
+    let { x1, x2, y1, y2, i, colorOffset } = stateManager.getState();
     if (!i || Number.isNaN(+i)) i = '120';
     if (!x1 || Number.isNaN(+x1)) x1 = '-2';
     if (!x2 || Number.isNaN(+x2)) x2 = '1';
@@ -153,11 +147,11 @@ function addListeners() {
     document.getElementById("zoom_minus")?.addEventListener("click", e => click(0.5, 0.5, 0.5));
     document.getElementById("download")?.addEventListener("click", e => download());
     INPUTS.ITER.addEventListener("change", () => {
-        updateURLParamsState();
+        updateState();
         draw();
     });
     INPUTS.COLOR_OFFSET.addEventListener('change', () => {
-        updateURLParamsState();
+        updateState();
         draw();
     });
     

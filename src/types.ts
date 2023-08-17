@@ -44,3 +44,12 @@ export type MandelbrotMessageData = { type: 'finish' } | {
         lineBuffer: ArrayBufferLike,
     }
 }
+
+export type URLParamsState = {
+    x1: string;
+    x2: string;
+    y1: string;
+    y2: string;
+    i: string;
+    colorOffset: string;
+}
