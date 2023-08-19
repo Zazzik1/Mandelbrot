@@ -36,8 +36,8 @@ export const CANVAS_SIZES = [
 export enum ZOOM_MULTIPLIER {
     CLICK_ZOOM_IN = 2,
     CLICK_ZOOM_OUT = 0.5,
-    SCROLL_ZOOM_IN = 1.3,
-    SCROLL_ZOOM_OUT = 1 / 1.3,
+    SCROLL_ZOOM_IN = 1.1,
+    SCROLL_ZOOM_OUT = 1 / 1.1,
 }
 
 export const DEFAULT_WORKERS_NO = 32;

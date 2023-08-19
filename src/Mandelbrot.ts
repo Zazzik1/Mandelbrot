@@ -32,7 +32,7 @@ export default class Mandelbrot {
                     this.tryToFinish();
                 } else if(data.type == "draw_line") {
                     const { y, lineBuffer } = data.payload;
-                    this.drawLine(y, lineBuffer);
+                    requestAnimationFrame(() =>  this.drawLine(y, lineBuffer));
                 }
             });
             this.workers.push(worker);
