@@ -19,13 +19,34 @@ export const DEFAULT_RGB: RGBColorPalette = [
     [106, 52, 3]
 ];
 
+export const GRAY_RGB: RGBColorPalette = [
+    [66, 66, 66],
+    [88, 88, 88],
+    [111, 111, 111],
+    [133, 133, 133],
+    [155, 155, 155],
+    [177, 177, 177],
+    [199, 199, 199],
+];
+
+export const WHITE_ONLY_RGB: RGBColorPalette = [
+    [255, 255, 255],
+];
+
+export const RGB_PALETTES: Record<string, RGBColorPalette> = {
+    DEFAULT_RGB,
+    WHITE_ONLY_RGB,
+    GRAY_RGB,
+}
+
 export const SUGGESTED_ITERATIONS = [5, 20, 40, 120, 200, 500, 800, 1000, 1200, 1400, 2000,  2500, 3000, 3500, 4000, 4500, 5000];
 export const CANVAS_SIZES = [
     { name: '400x400', value: '400x400' },
     { name: '500x500', value: '500x500' },
     { name: '600x600', value: '600x600' },
     { name: '700x700', value: '700x700' },
-    { name: '800x800', value: '800x800' },
+    { name: '800x800', value: '800x800', selected: true },
+    { name: '1000x1000', value: '1000x1000' },
     { name: '360x640', value: '360x640' },
     { name: '640x480', value: '640x480' },
     { name: '1280x720 HD', value: '1280x720' },
