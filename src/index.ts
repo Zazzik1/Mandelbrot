@@ -46,19 +46,14 @@ function draw() {
     };
     let x1 = input.get(INPUTS.X1);
     let y1 = input.get(INPUTS.Y1);
-    mandelbrot.iterations = input.get(INPUTS.ITER);
-    mandelbrot.colorOffset = +input.get(INPUTS.COLOR_OFFSET);
+    mandelbrot.setIterations(input.get(INPUTS.ITER));
+    mandelbrot.setColorOffset(input.get(INPUTS.COLOR_OFFSET));
     mandelbrot.draw(x1, y1, x1 + len, y1 + len2);
 }
 
 function reset() {
-    if (canvas == null) throw new Error('canvas is not defined');
-    input.set(INPUTS.LEN, 3);
-    input.set(INPUTS.LEN2, 3 / canvas.width * canvas.height);
-    input.set(INPUTS.X1, -2);
-    input.set(INPUTS.Y1, -1.5);
-    input.set(INPUTS.COLOR_OFFSET, 0);
     stateManager.clearState();
+    loadInitialStateFromURLParams();
     draw();
 }
  
