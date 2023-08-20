@@ -1,5 +1,5 @@
 import Mandelbrot from "~/Mandelbrot";
-import { CANVAS_SIZES, DOWNLOADED_FILE_NAME, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
+import { CANVAS_SIZES, DOWNLOADED_FILE_NAME, RGB_PALETTES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
 import '~/styles/styles';
 import StateManager from "~/utils/StateManager/StateManager";
 import URLSearchParamsStrategy from "~/utils/StateManager/strategies/URLSearchParamsStrategy";
@@ -7,6 +7,7 @@ import { AppState } from "~/types";
 
 const stateManager = new StateManager<AppState>(URLSearchParamsStrategy);
 const iterationsDatalist = document.querySelector('#iterations') as HTMLSelectElement;
+const colorPaletteSelectElement = document.querySelector("#color-palette") as HTMLSelectElement;
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 const wheel = document.querySelector("#wheel") as HTMLInputElement;
 const mandelbrot = new Mandelbrot(canvas);
@@ -41,24 +42,19 @@ function draw() {
     let len2 = input.get(INPUTS.LEN2);
     if (len <= 0 && len2 <= 0) return alert("Width should be > 0");
     if (input.get(INPUTS.ITER) <= 0) {
-        alert("iterations are <= 0, corrected to 40");
-        input.set(INPUTS.ITER, 40)
+        alert("iterations are <= 0, corrected to 25");
+        input.set(INPUTS.ITER, 25)
     };
     let x1 = input.get(INPUTS.X1);
     let y1 = input.get(INPUTS.Y1);
-    mandelbrot.iterations = input.get(INPUTS.ITER);
-    mandelbrot.colorOffset = +input.get(INPUTS.COLOR_OFFSET);
+    mandelbrot.setIterations(input.get(INPUTS.ITER));
+    mandelbrot.setColorOffset(input.get(INPUTS.COLOR_OFFSET));
     mandelbrot.draw(x1, y1, x1 + len, y1 + len2);
 }
 
 function reset() {
-    if (canvas == null) throw new Error('canvas is not defined');
-    input.set(INPUTS.LEN, 3);
-    input.set(INPUTS.LEN2, 3 / canvas.width * canvas.height);
-    input.set(INPUTS.X1, -2);
-    input.set(INPUTS.Y1, -1.5);
-    input.set(INPUTS.COLOR_OFFSET, 0);
     stateManager.clearState();
+    loadInitialStateFromURLParams();
     draw();
 }
  
@@ -117,11 +113,24 @@ function initializeDatasetsAndSelects() {
         iterationsDatalist.appendChild(option)
     }
     
-    for (let { name, value } of CANVAS_SIZES) {
+    for (let { name, value, selected } of CANVAS_SIZES) {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = name;
+        if (selected) {
+            option.selected = true;
+            let [width, height] = value.split("x");
+            canvas.width = +width;
+            canvas.height = +height;
+        }
         INPUTS.CSIZE.appendChild(option);
+    }
+
+    for (let paletteName of Object.keys(RGB_PALETTES)) {
+        const option = document.createElement('option');
+        option.value = paletteName;
+        option.textContent = paletteName;
+        colorPaletteSelectElement.appendChild(option);
     }
 }
  
@@ -146,12 +155,34 @@ function addListeners() {
     document.getElementById("zoom_plus")?.addEventListener("click", e => click(0.5, 0.5));
     document.getElementById("zoom_minus")?.addEventListener("click", e => click(0.5, 0.5, 0.5));
     document.getElementById("download")?.addEventListener("click", e => download());
+    document.getElementById("iter+25")?.addEventListener("click", e => {
+        let iterations = stateManager.getState().i;
+        if (iterations == null || Number.isNaN(+iterations)) iterations = '0';
+        let newIterations = +iterations + 25;
+        if (newIterations <= 0) newIterations = 25;
+        stateManager.setOne('i', newIterations)
+        input.set(INPUTS.ITER, newIterations);
+        draw();
+    });
+    document.getElementById("iter-25")?.addEventListener("click", e => {
+        let iterations = stateManager.getState().i;
+        if (iterations == null || Number.isNaN(+iterations)) iterations = '0';
+        let newIterations = +iterations - 25;
+        if (newIterations <= 0) newIterations = 25;
+        stateManager.setOne('i', newIterations)
+        input.set(INPUTS.ITER, newIterations);
+        draw();
+    });
     INPUTS.ITER.addEventListener("change", () => {
         updateState();
         draw();
     });
     INPUTS.COLOR_OFFSET.addEventListener('change', () => {
         updateState();
+        draw();
+    });
+    colorPaletteSelectElement.addEventListener("change", () => {
+        mandelbrot.setColorPalette(RGB_PALETTES[colorPaletteSelectElement.value]);
         draw();
     });
     
