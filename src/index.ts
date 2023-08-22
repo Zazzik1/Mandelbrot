@@ -1,5 +1,5 @@
 import Mandelbrot from "~/Mandelbrot";
-import { CANVAS_SIZES, DEFAULT_CONVERGED_COLOR, DEFAULT_ITERATIONS, DOWNLOADED_FILE_NAME, RGB_PALETTES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
+import { CANVAS_DIMENSIONS, DEFAULT_CONVERGED_COLOR, DEFAULT_ITERATIONS, DOWNLOADED_FILE_NAME, RGB_PALETTES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
 import '~/styles/styles';
 import StateManager from "~/utils/StateManager/StateManager";
 import URLSearchParamsStrategy from "~/utils/StateManager/strategies/URLSearchParamsStrategy";
@@ -118,15 +118,14 @@ function initializeDatasetsAndSelects() {
         iterationsDatalist.appendChild(option)
     }
     
-    for (let { name, value, selected } of CANVAS_SIZES) {
+    for (let { name, width, height, selected } of CANVAS_DIMENSIONS) {
         const option = document.createElement('option');
-        option.value = value;
+        option.value = `${width}x${height}`
         option.textContent = name;
         if (selected) {
             option.selected = true;
-            let [width, height] = value.split("x");
-            canvas.width = +width;
-            canvas.height = +height;
+            canvas.width = width;
+            canvas.height = height;
         }
         INPUTS.CSIZE.appendChild(option);
     }

@@ -1,6 +1,6 @@
-import { IRGB, RGBColorPalette } from "~/types";
+import { ICanvasDimension, IRGB, RGBColorPalette } from "~/types";
 
-export const DEFAULT_RGB: RGBColorPalette = [
+export const DEFAULT_PALETTE: RGBColorPalette = [
     [66, 30, 15],
     [25, 7, 26],
     [9, 1, 47],
@@ -19,7 +19,7 @@ export const DEFAULT_RGB: RGBColorPalette = [
     [106, 52, 3]
 ];
 
-export const GRAY_RGB: RGBColorPalette = [
+export const GRAY_PALETTE: RGBColorPalette = [
     [66, 66, 66],
     [88, 88, 88],
     [111, 111, 111],
@@ -29,31 +29,31 @@ export const GRAY_RGB: RGBColorPalette = [
     [199, 199, 199],
 ];
 
-export const WHITE_ONLY_RGB: RGBColorPalette = [
+export const WHITE_ONLY_PALETTE: RGBColorPalette = [
     [255, 255, 255],
 ];
 
 export const RGB_PALETTES: Record<string, RGBColorPalette> = {
-    DEFAULT_RGB,
-    WHITE_ONLY_RGB,
-    GRAY_RGB,
+    DEFAULT_PALETTE,
+    WHITE_ONLY_PALETTE,
+    GRAY_PALETTE,
 }
 
 export const DEFAULT_ITERATIONS: number = 120;
 export const DEFAULT_CONVERGED_COLOR: IRGB = [0, 0, 0];
 export const SUGGESTED_ITERATIONS = [5, 20, 40, 120, 200, 500, 800, 1000, 1200, 1400, 2000,  2500, 3000, 3500, 4000, 4500, 5000];
-export const CANVAS_SIZES = [
-    { name: '400x400', value: '400x400' },
-    { name: '500x500', value: '500x500' },
-    { name: '600x600', value: '600x600' },
-    { name: '700x700', value: '700x700' },
-    { name: '800x800', value: '800x800', selected: true },
-    { name: '1000x1000', value: '1000x1000' },
-    { name: '360x640', value: '360x640' },
-    { name: '640x480', value: '640x480' },
-    { name: '1280x720 HD', value: '1280x720' },
-    { name: '1920x1080 Full HD', value: '1920x1080' },
-    { name: '3840x2160 4K', value: '3840x2160' },
+export const CANVAS_DIMENSIONS: ICanvasDimension[] = [
+    { name: '400x400', width: 400, height: 400 },
+    { name: '500x500', width: 500, height: 500 },
+    { name: '600x600', width: 600, height: 600 },
+    { name: '700x700', width: 700, height: 700 },
+    { name: '800x800', width: 800, height: 800, selected: true },
+    { name: '1000x1000', width: 1000, height: 1000 },
+    { name: '360x640', width: 360, height: 640 },
+    { name: '640x480', width: 640, height: 480 },
+    { name: '1280x720 HD', width: 1280, height: 720 },
+    { name: '1920x1080 Full HD', width: 1920, height: 1080 },
+    { name: '3840x2160 4K', width: 3840, height: 2160 },
 ]
 
 export enum ZOOM_MULTIPLIER {

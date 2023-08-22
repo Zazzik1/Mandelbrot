@@ -55,3 +55,10 @@ export type AppState = {
     i: string;
     colorOffset: string;
 }
+
+export type ICanvasDimension = {
+    name: string;
+    width: number;
+    height: number;
+    selected?: boolean;
+};

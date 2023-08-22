@@ -1,4 +1,4 @@
-import { DEFAULT_COLOR_OFFSET, DEFAULT_CONVERGED_COLOR, DEFAULT_ITERATIONS, DEFAULT_RGB, DEFAULT_WORKERS_NO } from "~/constants";
+import { DEFAULT_COLOR_OFFSET, DEFAULT_CONVERGED_COLOR, DEFAULT_ITERATIONS, DEFAULT_PALETTE, DEFAULT_WORKERS_NO } from "~/constants";
 import { IRGB, MandelbrotMessageData, MandelbrotWorkerMessageData, RGBColorPalette, Task } from "~/types";
 import MandelbrotWorker from "~/workers/mandelbrot.worker";
 import { hexColorToRGB } from "./utils/utils";
@@ -11,7 +11,7 @@ export default class Mandelbrot {
     protected workersNo = DEFAULT_WORKERS_NO;
     protected workersFinished: boolean[] = [];
     protected workers: Worker[] = [];
-    protected rgb: RGBColorPalette = DEFAULT_RGB;
+    protected rgb: RGBColorPalette = DEFAULT_PALETTE;
     protected convergedColor: IRGB = DEFAULT_CONVERGED_COLOR;
     protected colorOffset: number = DEFAULT_COLOR_OFFSET;
     protected isRunning: boolean = false;
