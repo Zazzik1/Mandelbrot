@@ -19,6 +19,7 @@ export function isInSet(a: number, b: number, iterations: number) {
     return 0;
 }
 
+/** Converts color with format of #123456 to rgb. */
 export function hexColorToRGB(color: string): IRGB {
     const r = parseInt(color.substr(1,2), 16);
     const g = parseInt(color.substr(3,2), 16);
