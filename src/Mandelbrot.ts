@@ -1,16 +1,18 @@
-import { DEFAULT_COLOR_OFFSET, DEFAULT_RGB, DEFAULT_WORKERS_NO } from "~/constants";
-import { MandelbrotMessageData, MandelbrotWorkerMessageData, RGBColorPalette, Task } from "~/types";
+import { DEFAULT_COLOR_OFFSET, DEFAULT_CONVERGED_COLOR, DEFAULT_ITERATIONS, DEFAULT_PALETTE, DEFAULT_WORKERS_NO } from "~/constants";
+import { IRGB, MandelbrotMessageData, MandelbrotWorkerMessageData, RGBColorPalette, Task } from "~/types";
 import MandelbrotWorker from "~/workers/mandelbrot.worker";
+import { hexColorToRGB } from "./utils/utils";
 
 export default class Mandelbrot {
     protected canvas: HTMLCanvasElement;
     protected ctx: CanvasRenderingContext2D;
     protected resolveDrawFn?: Function;
-    protected iterations: number = 120;
+    protected iterations: number = DEFAULT_ITERATIONS;
     protected workersNo = DEFAULT_WORKERS_NO;
     protected workersFinished: boolean[] = [];
     protected workers: Worker[] = [];
-    protected rgb: RGBColorPalette = DEFAULT_RGB;
+    protected rgb: RGBColorPalette = DEFAULT_PALETTE;
+    protected convergedColor: IRGB = DEFAULT_CONVERGED_COLOR;
     protected colorOffset: number = DEFAULT_COLOR_OFFSET;
     protected isRunning: boolean = false;
     
@@ -36,6 +38,11 @@ export default class Mandelbrot {
             });
             this.workers.push(worker);
         }
+    }
+
+    public setConvergedColor(color: IRGB | string) {
+        if (Array.isArray(color)) return this.convergedColor = color;
+        return this.convergedColor = hexColorToRGB(color);
     }
 
     public setColorOffset(colorOffset: number) {
@@ -69,6 +76,7 @@ export default class Mandelbrot {
                 db: (y2 - y1) / height,
                 iterations: this.iterations,
                 colorOffset: this.colorOffset,
+                convergedColor: this.convergedColor,
             }
     
             const { workersNo } = this;

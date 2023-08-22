@@ -11,9 +11,11 @@ export interface Task {
     db: number;
     iterations: number;
     colorOffset: number,
+    convergedColor: IRGB,
 }
 
-export type RGBColorPalette = [number, number, number][];
+export type IRGB = [number, number, number];
+export type RGBColorPalette = IRGB[];
 
 declare global {
     interface Window { mandelbrot?: Mandelbrot }
@@ -53,3 +55,10 @@ export type AppState = {
     i: string;
     colorOffset: string;
 }
+
+export type ICanvasDimension = {
+    name: string;
+    width: number;
+    height: number;
+    selected?: boolean;
+};

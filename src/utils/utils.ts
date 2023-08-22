@@ -1,3 +1,5 @@
+import { IRGB } from "~/types";
+
 /**
  * Decides if the given point (a+bi) belongs to the Mandelbrot set.
  * 
@@ -15,4 +17,12 @@ export function isInSet(a: number, b: number, iterations: number) {
         if (Math.sqrt(aa ** 2 + (bb ** 2)) > 2) return i // diverges
     }
     return 0;
+}
+
+/** Converts color with format of #123456 to rgb. */
+export function hexColorToRGB(color: string): IRGB {
+    const r = parseInt(color.substr(1,2), 16);
+    const g = parseInt(color.substr(3,2), 16);
+    const b = parseInt(color.substr(5,2), 16);
+    return [r, g, b];
 }

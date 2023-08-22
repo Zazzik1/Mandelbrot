@@ -14,25 +14,19 @@
          <div>
             <label>
                Max iterations (precision): 
-               <input list="iterations" id="iter" value="120" />
+               <input list="iterations" id="iter" />
                <input type="button" value="+25" id="iter+25" />
                <input type="button" value="-25" id="iter-25" />
             </label>
             <br />
-            <input id="reset" type="button" value="Reset settings"/>
-            <datalist id="iterations"></datalist>
-         </div>
-         <div>
             <label>
                Canvas size: 
                <select id="cSize"></select>
             </label>
-            <span>Larger canvas sizes as well as larger maximum iteration values ​​can take much longer to compute.</span><br>
-            <label>
-               Color offset: 
-               <input id="color-offset" type="number" value="0" min="0" step="1"/>
-               <select id="color-palette"></select>
-            </label>
+            <span>Larger canvas sizes as well as larger maximum iteration values ​​can take much longer to compute.</span>
+            <br />
+            <input id="reset" type="button" value="Reset settings"/>
+            <datalist id="iterations"></datalist>
          </div>
          <div>
             <input id="zoom_minus" type="button" value="Zoom -"/>
@@ -43,6 +37,22 @@
                <input id="wheel" type="checkbox"/><br>
             </label>
             <span>If you want to zoom, just click on desired place on canvas and sometimes increase iterations to make edges sharpen.</span><br>
+         </div>
+         <div>
+            <label>
+               Color offset: 
+               <input id="color-offset" type="number" value="0" min="0" step="1"/>
+            </label>
+            <br />
+            <label>
+               Palette: 
+               <select id="color-palette"></select>
+            </label>
+            <br />
+            <label>
+               Converged color: 
+               <input type="color" id="color-converged" />
+            </label>
          </div>
          <div>
             <input id="download" type="button" value="Download image"/>
