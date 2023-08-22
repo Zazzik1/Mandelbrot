@@ -1,5 +1,6 @@
+import { DEFAULT_CONVERGED_COLOR } from "~/constants";
 import { NotRunningError } from "~/errors";
-import { CalculateActionPayload, MandelbrotMessageData, MandelbrotWorkerMessageData, RGBColorPalette, Task, WorkerData } from "~/types";
+import { CalculateActionPayload, IRGB, MandelbrotMessageData, MandelbrotWorkerMessageData, RGBColorPalette, Task, WorkerData } from "~/types";
 import { isInSet } from "~/utils/utils";
 
 class MandelbrotWorker {
@@ -47,11 +48,11 @@ class MandelbrotWorker {
         if (!this.data.isRunning) throw new NotRunningError();
         const { x1, y1, da, db, iterations, width, colorOffset } = this.data.task;
         const line = new ImageData(width, 1);
-        let c: [number, number, number];
+        let c: IRGB;
         for(let x = 0; x < width*4; x+=4){
             let diverge = isInSet(x1 + (x/4 * da), y1 + (y * db), iterations);
             if (!diverge) { 
-                c = [0, 0, 0]; // point belongs to the set
+                c = this.data.task.convergedColor; // point belongs to the set
             } else { 
                 let color = (diverge + colorOffset) % this.data.rgb.length;
                 c = this.data.rgb[color]; // colors outer points

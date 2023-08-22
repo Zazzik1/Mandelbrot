@@ -1,13 +1,14 @@
 import Mandelbrot from "~/Mandelbrot";
-import { CANVAS_SIZES, DOWNLOADED_FILE_NAME, RGB_PALETTES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
+import { CANVAS_SIZES, DEFAULT_CONVERGED_COLOR, DEFAULT_ITERATIONS, DOWNLOADED_FILE_NAME, RGB_PALETTES, SUGGESTED_ITERATIONS, ZOOM_MULTIPLIER } from "~/constants";
 import '~/styles/styles';
 import StateManager from "~/utils/StateManager/StateManager";
 import URLSearchParamsStrategy from "~/utils/StateManager/strategies/URLSearchParamsStrategy";
-import { AppState } from "~/types";
+import { AppState, RGBColorPalette } from "~/types";
 
 const stateManager = new StateManager<AppState>(URLSearchParamsStrategy);
 const iterationsDatalist = document.querySelector('#iterations') as HTMLSelectElement;
 const colorPaletteSelectElement = document.querySelector("#color-palette") as HTMLSelectElement;
+const colorConvergedInput = document.querySelector("#color-converged") as HTMLInputElement;
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 const wheel = document.querySelector("#wheel") as HTMLInputElement;
 const mandelbrot = new Mandelbrot(canvas);
@@ -49,6 +50,8 @@ function draw() {
     let y1 = input.get(INPUTS.Y1);
     mandelbrot.setIterations(input.get(INPUTS.ITER));
     mandelbrot.setColorOffset(input.get(INPUTS.COLOR_OFFSET));
+    mandelbrot.setColorPalette(RGB_PALETTES[colorPaletteSelectElement.value]);
+    mandelbrot.setConvergedColor(colorConvergedInput.value);
     mandelbrot.draw(x1, y1, x1 + len, y1 + len2);
 }
 
@@ -91,7 +94,7 @@ function updateState() {
 
 function loadInitialStateFromURLParams() {
     let { x1, x2, y1, y2, i, colorOffset } = stateManager.getState();
-    if (!i || Number.isNaN(+i)) i = '120';
+    if (!i || Number.isNaN(+i)) i = DEFAULT_ITERATIONS.toString();
     if (!x1 || Number.isNaN(+x1)) x1 = '-2';
     if (!x2 || Number.isNaN(+x2)) x2 = '1';
     if (!y1 || Number.isNaN(+y1)) y1 = '-1.5';
@@ -104,6 +107,8 @@ function loadInitialStateFromURLParams() {
     input.set(INPUTS.LEN2, y2 ? (+y2) - input.get(INPUTS.Y1) : 1.5);
     input.set(INPUTS.COLOR_OFFSET, colorOffset);
     input.set(INPUTS.ITER, i);
+    colorPaletteSelectElement.value = Object.keys(RGB_PALETTES)[0];
+    colorConvergedInput.value = `rgb(${DEFAULT_CONVERGED_COLOR.join(',')})`;
 }
 
 function initializeDatasetsAndSelects() {
@@ -183,6 +188,11 @@ function addListeners() {
     });
     colorPaletteSelectElement.addEventListener("change", () => {
         mandelbrot.setColorPalette(RGB_PALETTES[colorPaletteSelectElement.value]);
+        draw();
+    });
+
+    colorConvergedInput.addEventListener("change", () => {
+        mandelbrot.setConvergedColor(colorConvergedInput.value);
         draw();
     });
     

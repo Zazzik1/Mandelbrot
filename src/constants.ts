@@ -1,4 +1,4 @@
-import { RGBColorPalette } from "~/types";
+import { IRGB, RGBColorPalette } from "~/types";
 
 export const DEFAULT_RGB: RGBColorPalette = [
     [66, 30, 15],
@@ -39,6 +39,8 @@ export const RGB_PALETTES: Record<string, RGBColorPalette> = {
     GRAY_RGB,
 }
 
+export const DEFAULT_ITERATIONS: number = 120;
+export const DEFAULT_CONVERGED_COLOR: IRGB = [0, 0, 0];
 export const SUGGESTED_ITERATIONS = [5, 20, 40, 120, 200, 500, 800, 1000, 1200, 1400, 2000,  2500, 3000, 3500, 4000, 4500, 5000];
 export const CANVAS_SIZES = [
     { name: '400x400', value: '400x400' },
