@@ -6,6 +6,7 @@ Interactive representation of the [Mandelbrot series](https://en.wikipedia.org/w
 </p>
 
 # How to use?
+![Dynamic Regex Badge](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2FZazzik1%2FMandelbrot%2Frefs%2Fheads%2Fmain%2F.github%2Fworkflows%2Fpass_tests_and_release.yml&search=node-version%3A%20%5C%5B(.*)%5C%5D&replace=%241&label=node%20version)
 
 ### Installation:
 ```sh
