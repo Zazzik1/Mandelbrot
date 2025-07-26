@@ -70,7 +70,9 @@ jobs:
         run: cp -r build _site
 
       - name: Upload gh pages artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
 
   deploy-to-gh-pages:
     runs-on: ubuntu-latest
