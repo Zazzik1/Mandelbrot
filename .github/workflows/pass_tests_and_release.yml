@@ -9,12 +9,20 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   pass-tests-and-release:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [23.5.0]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -70,18 +78,10 @@ jobs:
         run: cp -r build _site
 
       - name: Upload gh pages artifact
-        uses: actions/upload-pages-artifact@v2
-
-  deploy-to-gh-pages:
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: pass-tests-and-release
-    steps:
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
