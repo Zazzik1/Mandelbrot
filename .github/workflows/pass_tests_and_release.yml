@@ -9,6 +9,11 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   pass-tests-and-release:
     runs-on: ubuntu-latest
@@ -76,14 +81,10 @@ jobs:
 
   deploy-to-gh-pages:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
+    needs: pass-tests-and-release
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    needs: pass-tests-and-release
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
