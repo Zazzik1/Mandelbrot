@@ -204,7 +204,8 @@ function addListeners() {
         ?.addEventListener('click', (e) => download());
     document.getElementById('iter+25')?.addEventListener('click', (e) => {
         let iterations = stateManager.getState().i;
-        if (iterations == null || Number.isNaN(+iterations)) iterations = '0';
+        if (iterations == null || Number.isNaN(+iterations))
+            iterations = DEFAULT_ITERATIONS.toString();
         let newIterations = +iterations + 25;
         if (newIterations <= 0) newIterations = 25;
         stateManager.setOne('i', newIterations);
@@ -213,7 +214,8 @@ function addListeners() {
     });
     document.getElementById('iter-25')?.addEventListener('click', (e) => {
         let iterations = stateManager.getState().i;
-        if (iterations == null || Number.isNaN(+iterations)) iterations = '0';
+        if (iterations == null || Number.isNaN(+iterations))
+            iterations = DEFAULT_ITERATIONS.toString();
         let newIterations = +iterations - 25;
         if (newIterations <= 0) newIterations = 25;
         stateManager.setOne('i', newIterations);
