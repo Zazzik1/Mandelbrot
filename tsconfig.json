@@ -6,9 +6,6 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "NodeNext",
-    "types": [
-      "jest"
-    ],
     "paths": {
       "~/*": ["./src/*"],
     }

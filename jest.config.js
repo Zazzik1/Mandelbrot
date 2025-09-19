@@ -1,4 +1,7 @@
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node'
-}
+    preset: 'ts-jest',
+    testEnvironment: 'node',
+    transform: {
+        '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.jest.json' }],
+    },
+};
