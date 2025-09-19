@@ -202,7 +202,7 @@ function addListeners() {
     document
         .getElementById('download')
         ?.addEventListener('click', (e) => download());
-    document.getElementById('iter+25')?.addEventListener('click', (e) => {
+    document.getElementById('iter-plus-25')?.addEventListener('click', (e) => {
         let iterations = stateManager.getState().i;
         if (iterations == null || Number.isNaN(+iterations))
             iterations = DEFAULT_ITERATIONS.toString();
@@ -212,7 +212,7 @@ function addListeners() {
         input.set(INPUTS.ITER, newIterations);
         draw();
     });
-    document.getElementById('iter-25')?.addEventListener('click', (e) => {
+    document.getElementById('iter-minus-25')?.addEventListener('click', (e) => {
         let iterations = stateManager.getState().i;
         if (iterations == null || Number.isNaN(+iterations))
             iterations = DEFAULT_ITERATIONS.toString();
