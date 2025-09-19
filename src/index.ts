@@ -259,7 +259,6 @@ function addListeners() {
      */
     window.addEventListener('popstate', function (event) {
         if (event.state) {
-            initializeDatasetsAndSelects();
             loadInitialStateFromURLParams();
             draw();
         }
