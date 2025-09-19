@@ -10,4 +10,6 @@
       "~/*": ["./src/*"],
     }
   },
+  "include": ["src"],
+  "exclude": ["node_modules", "cypress", "**/*.test.ts", "**/*.test.tsx"]
 }
