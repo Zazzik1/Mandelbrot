@@ -6,11 +6,10 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution": "NodeNext",
-    "types": [
-      "jest"
-    ],
     "paths": {
       "~/*": ["./src/*"],
     }
   },
+  "include": ["src"],
+  "exclude": ["node_modules", "cypress", "**/*.test.ts", "**/*.test.tsx"]
 }
