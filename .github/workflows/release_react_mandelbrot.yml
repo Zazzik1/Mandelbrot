@@ -1,0 +1,26 @@
+name: Publish @zazzik/react-mandelbrot to npm
+
+on:
+    workflow_dispatch:
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [23.5.0]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - uses: actions/download-artifact@v4
+              with:
+                  name: react-mandelbrot
+                  path: .
+
+            - name: Publish to npm
+              run: |
+                  cd packages/react-mandelbrot
+                  npm publish
+              env:
+                  NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

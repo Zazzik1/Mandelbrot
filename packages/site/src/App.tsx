@@ -3,6 +3,8 @@ import { Mandelbrot, Position } from '@zazzik/react-mandelbrot';
 import { useState } from 'react';
 import { Slider } from './components/ui/slider';
 
+type ValueChangeDetails = { value: string; valueAsNumber: number };
+
 function App() {
     const [position, setPosition] = useState<Position | undefined>();
     const [iterations, setIterations] = useState<number>(100);
@@ -17,7 +19,9 @@ function App() {
             <NumberInput.Root
                 maxW="200px"
                 value={iterations}
-                onValueChange={(e) => setIterations(e.value <= 0 ? 1 : e.value)}
+                onValueChange={(e: ValueChangeDetails) =>
+                    setIterations(e.valueAsNumber <= 0 ? 1 : e.valueAsNumber)
+                }
             >
                 <NumberInput.Control />
                 <NumberInput.Input />
@@ -32,7 +36,9 @@ function App() {
                 />
                 <Slider
                     value={[iterations]}
-                    onValueChange={(e) => setIterations(e.value)}
+                    onValueChange={(e: ValueChangeDetails) =>
+                        setIterations(e.valueAsNumber)
+                    }
                     on
                     min={1}
                     max={1000}
