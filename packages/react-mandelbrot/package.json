@@ -1,6 +1,6 @@
 {
     "name": "@zazzik/react-mandelbrot",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "React component library for rendering Mandelbrot fractals with Web Worker support",
     "scripts": {
         "build": "rimraf dist && rollup -c && tsc-alias -p tsconfig.json",
@@ -17,6 +17,9 @@
     "files": [
         "dist"
     ],
+    "publishConfig": {
+        "access": "public"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Zazzik1/Mandelbrot.git"

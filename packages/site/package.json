@@ -3,6 +3,8 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
+    "author": "Zazzik1 (https://github.com/Zazzik1)",
+    "license": "MIT",
     "scripts": {
         "dev": "vite",
         "build": "tsc -b && vite build",

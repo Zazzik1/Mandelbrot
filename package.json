@@ -1,5 +1,7 @@
 {
     "name": "@zazzik/mandelbrot-workspace",
+    "author": "Zazzik1 (https://github.com/Zazzik1)",
+    "license": "MIT",
     "private": "true",
     "workspaces": [
         "packages/*"
