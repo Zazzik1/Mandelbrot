@@ -146,42 +146,91 @@ jobs:
               id: deployment
               uses: actions/deploy-pages@v4
 
-    # gh_release:
-    #     runs-on: ubuntu-latest
-    #     if: github.ref == 'refs/heads/main'
-    #     needs: [build_and_test]
-    #     steps:
-    #         - uses: actions/download-artifact@v4
-    #           with:
-    #               name: mandelbrot-core
-    #               path: .
+    gh_release:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        needs: [build_and_test]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
 
-    #         - name: Generate release tag
-    #           id: generate_release_tag
-    #           uses: alexvingg/next-release-tag@v1.0.4
-    #           with:
-    #               github_token: ${{ secrets.GITHUB_TOKEN }}
-    #               tag_prefix: ''
+            - uses: actions/download-artifact@v4
+              with:
+                  name: site
+                  path: ./packages/site/dist
 
-    #         - name: Create release
-    #           id: create_release
-    #           uses: actions/create-release@v1
-    #           env:
-    #               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #           with:
-    #               tag_name: ${{ steps.generate_release_tag.outputs.release_tag }}
-    #               release_name: Release ${{ steps.generate_release_tag.outputs.release_tag }}
+            - name: Copy the license to packages/site/dist
+              run: cp ./packages/site/LICENSE ./packages/site/dist/LICENSE
 
-    #         - name: ZIP build
-    #           run: zip -r build.zip build
+            - name: ZIP build (site.zip)
+              run: |
+                  cd ./packages/site
+                  zip -r site.zip dist
 
-    #         - name: Upload Release Asset (build)
-    #           id: upload-release-asset
-    #           uses: actions/upload-release-asset@v1
-    #           env:
-    #               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #           with:
-    #               upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #               asset_path: ./build.zip
-    #               asset_name: build-v.${{ steps.generate_release_tag.outputs.release_tag }}.zip
-    #               asset_content_type: application/zip
+            - uses: actions/download-artifact@v4
+              with:
+                  name: mandelbrot-core
+                  path: ./packages/mandelbrot-core/dist
+
+            - name: Copy the license to packages/mandelbrot-core/dist/browser
+              run: cp ./packages/mandelbrot-core/LICENSE ./packages/mandelbrot-core/dist/browser/LICENSE
+
+            - name: ZIP build (mandelbrot-core-bundle-esm.zip)
+              run: |
+                  cd ./packages/mandelbrot-core/dist
+                  cp ./workers/* ./browser
+                  zip -r mandelbrot-core-bundle-esm.zip browser
+                  mv mandelbrot-core-bundle-esm.zip ..
+
+            - name: Generate release tag
+              id: generate_release_tag
+              uses: alexvingg/next-release-tag@v1.0.4
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  tag_prefix: ''
+
+            - name: Create release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ steps.generate_release_tag.outputs.release_tag }}
+                  release_name: Release ${{ steps.generate_release_tag.outputs.release_tag }}
+                  body: |
+                      ## 📦 Packages on npm
+
+                      Only some versions of built packages are available on npm.
+                      Check the npm page for the latest published version:
+
+                      - [@zazzik/mandelbrot-core](https://www.npmjs.com/package/@zazzik/mandelbrot-core)
+                      - [@zazzik/react-mandelbrot](https://www.npmjs.com/package/@zazzik/react-mandelbrot)
+
+                      ## 💻 GitHub Release Artifacts
+
+                       In the **Assets** section of this release, you can download:
+
+                      - **Demo site:** Try out the interactive demo in your browser.
+                      - **Browser ESM bundle (mandelbrot-core):** Use this file to run mandelbrot-core directly in the browser.
+
+            - name: Upload Release Asset (site.zip)
+              id: upload-release-asset-site
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./packages/site/site.zip
+                  asset_name: site-v.${{ steps.generate_release_tag.outputs.release_tag }}.zip
+                  asset_content_type: application/zip
+
+            - name: Upload Release Asset (mandelbrot-core-bundle-esm.zip)
+              id: upload-release-asset-core
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./packages/mandelbrot-core/mandelbrot-core-bundle-esm.zip
+                  asset_name: mandelbrot-core-bundle-esm-v.${{ steps.generate_release_tag.outputs.release_tag }}.zip
+                  asset_content_type: application/zip
