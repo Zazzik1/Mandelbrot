@@ -23,7 +23,7 @@ This monorepo contains three packages:
 
 Some packages are available on npm:
 
-### mandelbrot-core
+### ✨ mandelbrot-core
 
 [![npm version](https://img.shields.io/npm/v/@zazzik/mandelbrot-core)](https://www.npmjs.com/package/@zazzik/mandelbrot-core)
 
@@ -31,14 +31,49 @@ Some packages are available on npm:
 npm install @zazzik/mandelbrot-core
 ```
 
+#### Example usage
+
+```ts
+import { Mandelbrot } from '@zazzik/mandelbrot-core';
+
+const canvas = document.querySelector('canvas');
+const mandelbrot = new Mandelbrot(canvas);
+mandelbrot.draw(-2, -1.5, 1, 1.5);
+```
+
 _The ESM bundles can be found in [github releases](https://github.com/Zazzik1/Mandelbrot/releases). Use bundles if you want to load the package directly in the browser._
 
-### react-mandelbrot
+### ✨ react-mandelbrot
 
 [![npm version](https://img.shields.io/npm/v/@zazzik/react-mandelbrot)](https://www.npmjs.com/package/@zazzik/react-mandelbrot)
 
 ```sh
 npm install @zazzik/react-mandelbrot
+```
+
+#### Example usage
+
+```ts
+import { Mandelbrot, Position } from '@zazzik/react-mandelbrot';
+import { useState } from 'react';
+
+const App = () => {
+    const [position, setPosition] = useState<Position>({
+        x1: -2,
+        x2: 1,
+        y1: -1.5,
+        y2: 1.5,
+    });
+    return (
+        <Mandelbrot
+            width={400}
+            height={400}
+            iterations={120}
+            position={position}
+            onPositionChange={setPosition}
+        />
+    )
+}
 ```
 
 Not every release is published to npm. Check the npm page for the latest available version.

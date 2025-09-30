@@ -9,7 +9,7 @@ npm install @zazzik/react-mandelbrot
 ## Example usage
 
 ```ts
-import { Mandelbrot } from '@zazzik/react-mandelbrot';
+import { Mandelbrot, Position } from '@zazzik/react-mandelbrot';
 import { useState } from 'react';
 
 const App = () => {
