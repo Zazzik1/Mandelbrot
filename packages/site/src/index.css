@@ -2,8 +2,17 @@ body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    background-color: rgb(22, 20, 31);
+    background-color: rgb(7, 3, 22);
     color: white;
     font-size: 20px;
     font-family: Calibri;
+}
+
+canvas {
+    border: 1px solid rgb(43, 42, 46);
+}
+
+#root {
+    padding: 6px 12px;
+    box-sizing: border-box;
 }
