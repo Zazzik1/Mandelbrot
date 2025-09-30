@@ -1,0 +1,236 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - 'main'
+    pull_request:
+        branches:
+            - '**'
+
+permissions:
+    contents: write
+    pages: write
+    id-token: write
+
+jobs:
+    build_and_test:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [23.5.0]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run unit tests
+              run: npm test --workspaces
+
+            # - name: Run cypress tests
+            #   run: |
+            #          npm run dev &
+            #          PID=$!
+            #          npm run test:cypress:run
+            #          kill $PID
+
+            - name: Create build
+              run: npm run build --workspaces
+
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: mandelbrot-core
+                  path: packages/mandelbrot-core/dist/
+
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: react-mandelbrot
+                  path: packages/react-mandelbrot/dist/
+
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: site
+                  path: packages/site/dist/
+
+    publish_npm_mandelbrot_core:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        needs: [build_and_test]
+        environment:
+            name: npm-zazzik/mandelbrot-core # manual approval
+            url: https://www.npmjs.com/package/@zazzik/mandelbrot-core
+        strategy:
+            matrix:
+                node-version: [23.5.0]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - uses: actions/download-artifact@v4
+              with:
+                  name: mandelbrot-core
+                  path: ./packages/mandelbrot-core/dist
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  registry-url: 'https://registry.npmjs.org'
+
+            - name: Publish to npm
+              run: |
+                  cd packages/mandelbrot-core
+                  npm publish --provenance --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    publish_npm_react_mandelbrot:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        needs: [build_and_test]
+        environment:
+            name: npm-zazzik/react-mandelbrot # manual approval
+            url: https://www.npmjs.com/package/@zazzik/react-mandelbrot
+        strategy:
+            matrix:
+                node-version: [23.5.0]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - uses: actions/download-artifact@v4
+              with:
+                  name: react-mandelbrot
+                  path: ./packages/react-mandelbrot/dist
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  registry-url: 'https://registry.npmjs.org'
+
+            - name: Publish to npm
+              run: |
+                  cd packages/react-mandelbrot
+                  npm publish --provenance --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    publish_gh_pages:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        needs: [build_and_test]
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - uses: actions/download-artifact@v4
+              with:
+                  name: site
+                  path: .
+
+            - name: Prepare _site directory
+              run: cp -r packages/site/dist _site
+
+            - name: Upload gh pages artifact
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: _site
+
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
+
+    gh_release:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        needs: [build_and_test]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - uses: actions/download-artifact@v4
+              with:
+                  name: site
+                  path: ./packages/site/dist
+
+            - name: Copy the license to packages/site/dist
+              run: cp ./packages/site/LICENSE ./packages/site/dist/LICENSE
+
+            - name: ZIP build (site.zip)
+              run: |
+                  cd ./packages/site
+                  zip -r site.zip dist
+
+            - uses: actions/download-artifact@v4
+              with:
+                  name: mandelbrot-core
+                  path: ./packages/mandelbrot-core/dist
+
+            - name: Copy the license to packages/mandelbrot-core/dist/browser
+              run: cp ./packages/mandelbrot-core/LICENSE ./packages/mandelbrot-core/dist/browser/LICENSE
+
+            - name: ZIP build (mandelbrot-core-bundle-esm.zip)
+              run: |
+                  cd ./packages/mandelbrot-core/dist
+                  cp ./workers/* ./browser
+                  zip -r mandelbrot-core-bundle-esm.zip browser
+                  mv mandelbrot-core-bundle-esm.zip ..
+
+            - name: Generate release tag
+              id: generate_release_tag
+              uses: alexvingg/next-release-tag@v1.0.4
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  tag_prefix: ''
+
+            - name: Create release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ steps.generate_release_tag.outputs.release_tag }}
+                  release_name: Release ${{ steps.generate_release_tag.outputs.release_tag }}
+                  body: |
+                      ## 📦 Packages on npm
+
+                      Only some versions of built packages are available on npm.
+                      Check the npm page for the latest published version:
+
+                      - [@zazzik/mandelbrot-core](https://www.npmjs.com/package/@zazzik/mandelbrot-core)
+                      - [@zazzik/react-mandelbrot](https://www.npmjs.com/package/@zazzik/react-mandelbrot)
+
+                      ## 💻 GitHub Release Artifacts
+
+                       In the **Assets** section of this release, you can download:
+
+                      - **Demo site:** Try out the interactive demo in your browser.
+                      - **Browser ESM bundle (mandelbrot-core):** Use this file to run mandelbrot-core directly in the browser.
+
+            - name: Upload Release Asset (site.zip)
+              id: upload-release-asset-site
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./packages/site/site.zip
+                  asset_name: site-v.${{ steps.generate_release_tag.outputs.release_tag }}.zip
+                  asset_content_type: application/zip
+
+            - name: Upload Release Asset (mandelbrot-core-bundle-esm.zip)
+              id: upload-release-asset-core
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./packages/mandelbrot-core/mandelbrot-core-bundle-esm.zip
+                  asset_name: mandelbrot-core-bundle-esm-v.${{ steps.generate_release_tag.outputs.release_tag }}.zip
+                  asset_content_type: application/zip
