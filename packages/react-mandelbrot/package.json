@@ -35,7 +35,7 @@
         "web-workers",
         "react"
     ],
-    "author": "Zazzik1",
+    "author": "Mateusz Bilicki (https://github.com/Zazzik1)",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/Zazzik1/Mandelbrot/issues"
