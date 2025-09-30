@@ -148,7 +148,7 @@ jobs:
 
     gh_release:
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
+        # if: github.ref == 'refs/heads/main'
         needs: [build_and_test]
         steps:
             - name: Checkout repository
