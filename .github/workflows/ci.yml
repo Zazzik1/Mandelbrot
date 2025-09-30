@@ -132,10 +132,7 @@ jobs:
             - uses: actions/download-artifact@v4
               with:
                   name: site
-                  path: .
-
-            - name: Prepare _site directory
-              run: cp -r packages/site/dist _site
+                  path: _site
 
             - name: Upload gh pages artifact
               uses: actions/upload-pages-artifact@v3
