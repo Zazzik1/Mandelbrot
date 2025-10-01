@@ -107,6 +107,8 @@ The site build is located in `packages/site/dist/` and can be served, for exampl
 
 ```sh
 cd packages/site/dist
+mkdir Mandelbrot
+mv * ./Mandelbrot # gh-pages live under zazzik1.github.io/Mandelbrot
 npx serve .
 # or
 python3 -m http.server --directory .

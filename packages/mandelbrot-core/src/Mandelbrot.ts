@@ -13,6 +13,7 @@ import {
     Task,
 } from '~/types';
 import { hexColorToRGB } from '~/utils/utils';
+import { DrawAbortedError } from './errors';
 
 export default class Mandelbrot {
     protected canvas: HTMLCanvasElement;
@@ -26,6 +27,12 @@ export default class Mandelbrot {
     protected convergedColor: IRGB = DEFAULT_CONVERGED_COLOR;
     protected colorOffset: number = DEFAULT_COLOR_OFFSET;
     protected isRunning: boolean = false;
+    protected lastDrawParams?: {
+        x1: number;
+        x2: number;
+        y1: number;
+        y2: number;
+    } = undefined;
 
     constructor(canvas: HTMLCanvasElement) {
         if (!canvas) throw new Error('canvas was not provided');
@@ -71,12 +78,20 @@ export default class Mandelbrot {
     }
 
     public draw(x1: number, y1: number, x2: number, y2: number) {
-        return new Promise(async (resolve) => {
+        return new Promise(async (resolve, reject) => {
             const { width, height } = this.canvas;
-            if (this.isRunning) await this.forceStopWorkers();
             this.resolveDrawFn = resolve;
-            this.ctx.clearRect(0, 0, width, height);
+            if (this.isRunning) await this.forceStopWorkers();
+            // only one promise at once continue:
+            if (this.resolveDrawFn !== resolve) {
+                return reject(
+                    new DrawAbortedError(
+                        'Concurrent draw call detected — this draw operation was aborted.',
+                    ),
+                );
+            }
             this.isRunning = true;
+            this.ctx.clearRect(0, 0, width, height);
 
             const task: Task = {
                 x1: x1,

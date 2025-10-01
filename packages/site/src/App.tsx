@@ -145,9 +145,7 @@ function App() {
                                 </Switch.ThumbIndicator>
                             </Switch.Thumb>
                         </Switch.Control>
-                        <Switch.Label>
-                            Use mouse wheel to zoom (use slowly)
-                        </Switch.Label>
+                        <Switch.Label>Use mouse wheel to zoom</Switch.Label>
                     </Switch.Root>
                 </Stack>
             </HStack>

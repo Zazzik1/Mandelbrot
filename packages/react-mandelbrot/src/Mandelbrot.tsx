@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import {
     DEFAULT_POSITION,
+    DrawAbortedError,
     IRGB,
     Mandelbrot as MandelbrotCore,
     RGBColorPalette,
@@ -186,7 +187,10 @@ const Mandelbrot = forwardRef<MandelbrotRef, Props>(
                     mandelbrot.setConvergedColor(convergedColor);
 
                 const { x1, y1, x2, y2 } = position;
-                mandelbrot.draw(x1, y1, x2, y2);
+                mandelbrot.draw(x1, y1, x2, y2).catch((err) => {
+                    if (err instanceof DrawAbortedError) return;
+                    console.error(err);
+                });
             }
         }, [
             position.x1,
