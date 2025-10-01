@@ -6,7 +6,8 @@ Thanks to multiprocessing, it can quickly generate high-resolution fractals.
 ### Preview: [Demo site](https://zazzik1.github.io/Mandelbrot/)
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/78451054/144238786-6bf2f184-4256-45a3-a179-201738d036fa.png" alt="Mandelbrot Demo Screenshot">
+  <img width="1035" height="313" alt="Image" src="https://github.com/user-attachments/assets/3efbb08b-f59c-4f8b-94f7-a987ef91da9d" />
+  <img width="1035" height="313" alt="Image" src="https://github.com/user-attachments/assets/c9219a65-6dd9-4661-970a-f59f6381c572" />
 </p>
 
 ---
