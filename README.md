@@ -82,7 +82,7 @@ Not every release is published to npm. Check the npm page for the latest availab
 
 ## ⚡ Development
 
-![Dynamic Regex Badge](<https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2FZazzik1%2FMandelbrot%2Frefs%2Fheads%2Fmain%2F.github%2Fworkflows%2Fpass_tests_and_release.yml&search=node-version%3A%20%5C%5B(.*)%5C%5D&replace=%241&label=node%20version>)
+![Node version](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2FZazzik1%2FMandelbrot%2Frefs%2Fheads%2Fmain%2F.github%2Fworkflows%2Fci.yml&query=%24.jobs.build_and_test.strategy.matrix.node-version%5B0%5D&label=Node%20version)
 
 ### Installation
 
