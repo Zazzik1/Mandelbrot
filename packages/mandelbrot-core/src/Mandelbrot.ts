@@ -27,12 +27,6 @@ export default class Mandelbrot {
     protected convergedColor: IRGB = DEFAULT_CONVERGED_COLOR;
     protected colorOffset: number = DEFAULT_COLOR_OFFSET;
     protected isRunning: boolean = false;
-    protected lastDrawParams?: {
-        x1: number;
-        x2: number;
-        y1: number;
-        y2: number;
-    } = undefined;
 
     constructor(canvas: HTMLCanvasElement) {
         if (!canvas) throw new Error('canvas was not provided');
