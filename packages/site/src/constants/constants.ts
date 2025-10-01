@@ -1,38 +1,9 @@
 import { createListCollection } from '@chakra-ui/react';
-
-export type RGBColorPalette = [number, number, number][];
-
-export const DEFAULT_PALETTE: RGBColorPalette = [
-    [66, 30, 15],
-    [25, 7, 26],
-    [9, 1, 47],
-    [4, 4, 73],
-    [0, 7, 100],
-    [12, 44, 138],
-    [24, 82, 177],
-    [57, 125, 209],
-    [134, 181, 229],
-    [211, 236, 248],
-    [241, 233, 191],
-    [248, 201, 95],
-    [255, 170, 0],
-    [204, 128, 0],
-    [153, 87, 0],
-    [106, 52, 3],
-];
-
-export const GRAY_PALETTE: RGBColorPalette = [
-    [99, 99, 99],
-    [111, 111, 111],
-    [122, 122, 122],
-    [133, 133, 133],
-    [144, 144, 144],
-    [155, 155, 155],
-    [166, 166, 166],
-    [177, 177, 177],
-    [188, 188, 188],
-    [199, 199, 199],
-];
+import { DEFAULT_PALETTE } from './colorPalettes/defaultPalette';
+import { GRAY_PALETTE } from './colorPalettes/grayScale';
+import { PALETTE_2 } from './colorPalettes/palette2';
+import { PALETTE_3 } from './colorPalettes/palette3';
+import { RGBColorPalette } from '@/types';
 
 export const WHITE_ONLY_PALETTE: RGBColorPalette = [[255, 255, 255]];
 
@@ -40,6 +11,8 @@ export const RGB_PALETTES = {
     DEFAULT_PALETTE,
     WHITE_ONLY_PALETTE,
     GRAY_PALETTE,
+    PALETTE_2,
+    PALETTE_3,
 } as const;
 
 export type ColorPaletteKey = keyof typeof RGB_PALETTES;
@@ -84,6 +57,8 @@ export const colorPalettes = createListCollection({
         { label: 'Default', value: 'DEFAULT_PALETTE' },
         { label: 'White only', value: 'WHITE_ONLY_PALETTE' },
         { label: 'Grayscale', value: 'GRAY_PALETTE' },
+        { label: 'Palette #2', value: 'PALETTE_2' },
+        { label: 'Palette #3', value: 'PALETTE_3' },
     ],
 });
 

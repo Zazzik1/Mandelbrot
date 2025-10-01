@@ -29,8 +29,9 @@ import {
     DEFAULT_ITERATIONS,
     DEFAULT_POSITION,
     RGB_PALETTES,
-} from './constants';
-import GitHubButton from './GithubButton';
+} from '@/constants/constants';
+import GitHubButton from '@/GithubButton';
+import { getPositionWithAspectRatio } from '@/util';
 
 type ValueChangeDetails = { value: string; valueAsNumber: number };
 
@@ -41,14 +42,13 @@ function App() {
         [],
     );
     const mandelbrotRef = useRef<MandelbrotRef>(null);
-    const [position, setPosition] = useState<Position>({
-        ...DEFAULT_POSITION,
-        x2:
-            ((DEFAULT_POSITION.y2 - DEFAULT_POSITION.y1) /
-                CANVAS_SIZES[DEFAULT_CANVAS_SIZE_KEY].height) *
-                CANVAS_SIZES[DEFAULT_CANVAS_SIZE_KEY].width +
-            DEFAULT_POSITION.x1, // maintain aspect ratio
-    });
+    const [position, setPosition] = useState<Position>(
+        getPositionWithAspectRatio(
+            DEFAULT_POSITION,
+            CANVAS_SIZES[DEFAULT_CANVAS_SIZE_KEY].width,
+            CANVAS_SIZES[DEFAULT_CANVAS_SIZE_KEY].height,
+        ),
+    );
     const [iterations, setIterations] = useState<number>(DEFAULT_ITERATIONS);
     const [mouseWheelEnabled, setMouseWheelEnabled] = useState(true);
     const [canvasSize, setCanvasSize] = useState<CanvasSizeKey>(
@@ -62,17 +62,26 @@ function App() {
     );
 
     const colorPalette = RGB_PALETTES[colorPaletteKey as ColorPaletteKey];
-    const { width, height } = CANVAS_SIZES[canvasSize as CanvasSizeKey];
+    const { width, height } = useMemo(
+        () => CANVAS_SIZES[canvasSize as CanvasSizeKey],
+        [canvasSize],
+    );
 
     const handleResetSettings = useCallback(() => {
-        setPosition(DEFAULT_POSITION);
+        setPosition(
+            getPositionWithAspectRatio(
+                DEFAULT_POSITION,
+                CANVAS_SIZES[DEFAULT_CANVAS_SIZE_KEY].width,
+                CANVAS_SIZES[DEFAULT_CANVAS_SIZE_KEY].height,
+            ),
+        );
         setIterations(DEFAULT_ITERATIONS);
         setColorOffset(0);
         setConvergedColor(parseColor(DEFAULT_CONVERGED_COLOR));
         setColorPalette('DEFAULT_PALETTE');
         setMouseWheelEnabled(true);
         setCanvasSize(DEFAULT_CANVAS_SIZE_KEY);
-    }, [DEFAULT_CANVAS_SIZE_KEY]);
+    }, [DEFAULT_CANVAS_SIZE_KEY, width, height]);
 
     const handleDownloadImage = useCallback(() => {
         mandelbrotRef.current?.downloadImage();
@@ -180,12 +189,9 @@ function App() {
                         onValueChange={(e) => {
                             const key = e.value[0] as CanvasSizeKey;
                             const { width, height } = CANVAS_SIZES[key];
-                            setPosition((old) => ({
-                                ...old,
-                                x2:
-                                    ((old.y2 - old.y1) / height) * width +
-                                    old.x1, // maintain aspect ratio
-                            }));
+                            setPosition((old) =>
+                                getPositionWithAspectRatio(old, width, height),
+                            );
                             setCanvasSize(key);
                         }}
                     >
@@ -250,7 +256,11 @@ function App() {
                             onValueChange={(e: { value: number[] }) =>
                                 setColorOffset(e.value[0])
                             }
-                            max={16}
+                            max={
+                                colorPalette.length
+                                    ? colorPalette.length - 1
+                                    : 1
+                            }
                             min={0}
                         >
                             <Slider.Label>Color offset</Slider.Label>
@@ -265,9 +275,10 @@ function App() {
                             collection={colorPalettes}
                             width="150px"
                             value={[colorPaletteKey]}
-                            onValueChange={(e: { value: string[] }) =>
-                                setColorPalette(e.value[0] as ColorPaletteKey)
-                            }
+                            onValueChange={(e: { value: string[] }) => {
+                                setColorPalette(e.value[0] as ColorPaletteKey);
+                                setColorOffset(0);
+                            }}
                         >
                             <Select.HiddenSelect />
                             <Select.Label>Color palette</Select.Label>
