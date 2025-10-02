@@ -81,7 +81,7 @@ function App() {
         setColorPalette('DEFAULT_PALETTE');
         setMouseWheelEnabled(true);
         setCanvasSize(DEFAULT_CANVAS_SIZE_KEY);
-    }, [DEFAULT_CANVAS_SIZE_KEY, width, height]);
+    }, [DEFAULT_CANVAS_SIZE_KEY]);
 
     const handleDownloadImage = useCallback(() => {
         mandelbrotRef.current?.downloadImage();

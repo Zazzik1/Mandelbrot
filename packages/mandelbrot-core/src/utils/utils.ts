@@ -8,22 +8,25 @@ import { IRGB } from '~/types';
  * Returns number of iterations in other case
  */
 export function isInSet(a: number, b: number, iterations: number) {
-    let aa: number, bb: number;
-    aa = bb = 0;
+    let aa = 0,
+        bb = 0;
     for (let i = 1; i <= iterations; i++) {
         //z' = z^2 + (a+bi)
-        let at = aa ** 2 - bb ** 2 + a;
+        const aa2 = aa * aa;
+        const bb2 = bb * bb;
+
+        if (aa2 + bb2 > 4) return i; // (sqrt > 2) diverges
+        let at = aa2 - bb2 + a;
         bb = 2 * aa * bb + b;
         aa = at;
-        if (aa ** 2 + bb ** 2 > 4) return i; // (sqrt > 2) diverges
     }
     return 0;
 }
 
 /** Converts color with format of #123456 to rgb. */
 export function hexColorToRGB(color: string): IRGB {
-    const r = parseInt(color.substr(1, 2), 16);
-    const g = parseInt(color.substr(3, 2), 16);
-    const b = parseInt(color.substr(5, 2), 16);
+    const r = parseInt(color.substring(1, 3), 16);
+    const g = parseInt(color.substring(3, 5), 16);
+    const b = parseInt(color.substring(5, 7), 16);
     return [r, g, b];
 }
