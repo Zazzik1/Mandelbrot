@@ -1,23 +1,44 @@
-import { DEFAULT_CONVERGED_COLOR } from '~/constants';
 import { NotRunningError } from '~/errors';
 import {
     CalculateActionPayload,
+    FractalKind,
     IRGB,
     MandelbrotMessageData,
     MandelbrotWorkerMessageData,
-    RGBColorPalette,
-    Task,
     WorkerData,
 } from '~/types';
-import { isInSet } from '~/utils/utils';
+import {
+    BaseFractalWorkerStrategy,
+    isInSet,
+    JuliaSetWorkerStrategy,
+    MendelbrotSetWorkerStrategy,
+} from '~/utils/utils';
 
 class MandelbrotWorker {
     protected loopTimeout?: ReturnType<typeof setTimeout>;
     protected data: WorkerData = {
         isRunning: false,
     };
-    public run(details: CalculateActionPayload) {
+    protected strategy?: BaseFractalWorkerStrategy;
+    public run(details: CalculateActionPayload): void {
         if (this.data.isRunning) return;
+        switch (details.task.kind) {
+            case FractalKind.Julia: {
+                const { iterations, cRe, cIm } = details.task;
+                this.strategy = new JuliaSetWorkerStrategy(
+                    iterations,
+                    cRe,
+                    cIm,
+                );
+                break;
+            }
+            case FractalKind.Mandelbrot:
+            default: {
+                const { iterations } = details.task;
+                this.strategy = new MendelbrotSetWorkerStrategy(iterations);
+                break;
+            }
+        }
         this.data = {
             ...details,
             isRunning: true,
@@ -25,7 +46,7 @@ class MandelbrotWorker {
 
         this._runLoop(details.startingLine);
     }
-    protected _runLoop = (lineNo: number) => {
+    protected _runLoop = (lineNo: number): void => {
         const { data } = this;
         if (!data.isRunning) return this.finish();
         if (lineNo >= data.startingLine + data.linesToDo) return this.finish();
@@ -42,24 +63,25 @@ class MandelbrotWorker {
         this.loopTimeout = setTimeout(this._runLoop, 0, lineNo + 1);
     };
     /** Stops without notifying. */
-    public stop() {
+    public stop(): void {
         this.data = { isRunning: false };
         if (this.loopTimeout) clearTimeout(this.loopTimeout);
     }
     /** Stops with notifying, but only if isRunning. */
-    public finish() {
+    public finish(): void {
         if (!this.data.isRunning) return;
         ctx.postMessage({ type: 'finish' });
         this.stop();
     }
     protected calculateLine(y: number): ImageData {
         if (!this.data.isRunning) throw new NotRunningError();
-        const { x1, y1, da, db, iterations, width, colorOffset } =
-            this.data.task;
+        const { x1, y1, da, db, width, colorOffset } = this.data.task;
         const line = new ImageData(width, 1);
         let c: IRGB;
+        const da2 = da / 4;
+        const b = y1 + y * db;
         for (let x = 0; x < width * 4; x += 4) {
-            let diverge = isInSet(x1 + (x / 4) * da, y1 + y * db, iterations);
+            let diverge = this.strategy!.calculate(x1 + x * da2, b);
             if (!diverge) {
                 c = this.data.task.convergedColor; // point belongs to the set
             } else {

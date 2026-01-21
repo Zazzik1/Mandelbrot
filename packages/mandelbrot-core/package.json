@@ -1,7 +1,7 @@
 {
     "name": "@zazzik/mandelbrot-core",
     "private": false,
-    "version": "1.0.11",
+    "version": "1.1.0",
     "description": "Core library for generating Mandelbrot fractals with Web Worker support for multithreaded rendering.",
     "scripts": {
         "build": "rimraf dist && rollup -c rollup.worker.config.cjs && rollup -c rollup.config.cjs && tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
