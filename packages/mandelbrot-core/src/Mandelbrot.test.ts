@@ -52,15 +52,19 @@ beforeEach(() => {
 });
 
 describe('Mandelbrot', () => {
-    test('draw method should submit tasks to each worker', () => {
-        const canvas = {
+    let canvas: HTMLCanvasElement;
+    beforeEach(() => {
+        canvas = {
             width: 900,
             height: 1000,
             getContext: () => ({
                 clearRect: vi.fn(),
             }),
         } as unknown as HTMLCanvasElement;
-        const { x1, x2, y1, y2 } = DEFAULT_POSITION;
+    });
+    const { x1, x2, y1, y2 } = DEFAULT_POSITION;
+
+    test('draw method should submit tasks to each worker', () => {
         const workersNo = 3;
         const mandelbrot = new Mandelbrot(canvas, { workersNo });
         expect(MockWorker.instances.length).toBe(workersNo);
@@ -98,14 +102,51 @@ describe('Mandelbrot', () => {
             } satisfies MandelbrotWorkerMessageData);
         }
     });
+
+    test('drawJulia method should submit tasks to each worker', () => {
+        const workersNo = 3;
+        const mandelbrot = new Mandelbrot(canvas, { workersNo });
+        expect(MockWorker.instances.length).toBe(workersNo);
+
+        const cRe = -0.1;
+        const cIm = 0.65;
+        mandelbrot.drawJulia({ x1, y1, x2, y2, cRe, cIm });
+        for (
+            let workerId = 0;
+            workerId < MockWorker.instances.length;
+            workerId++
+        ) {
+            const worker = MockWorker.instances[workerId];
+            expect(worker.postMessage).toBeCalledTimes(1);
+            expect(worker.postMessage).toBeCalledWith({
+                type: 'calculate',
+                payload: {
+                    workerId,
+                    startingLine: (canvas.height * workerId) / workersNo,
+                    linesToDo: canvas.height / workersNo,
+                    rgb: DEFAULT_PALETTE,
+                    task: {
+                        x1,
+                        x2,
+                        y1,
+                        y2,
+                        cRe,
+                        cIm,
+                        colorOffset: 0,
+                        convergedColor: [0, 0, 0],
+                        da: 0.0033333333333333335,
+                        db: 0.003,
+                        height: 1000,
+                        width: 900,
+                        iterations: 120,
+                        kind: FractalKind.Julia,
+                    },
+                },
+            } satisfies MandelbrotWorkerMessageData);
+        }
+    });
+
     test('calls .drawLine method when "draw_line" type message is received', () => {
-        const canvas = {
-            width: 900,
-            height: 1000,
-            getContext: () => ({
-                clearRect: vi.fn(),
-            }),
-        } as unknown as HTMLCanvasElement;
         const mandelbrot = new Mandelbrot(canvas, { workersNo: 1 });
         vi.spyOn(mandelbrot, 'drawLine').mockImplementation(() => {});
         const worker = MockWorker.instances[0];

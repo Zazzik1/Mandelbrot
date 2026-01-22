@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { hexColorToRGB, isInSet } from './utils';
+import { hexColorToRGB, isInSet, isInSetJulia } from './utils';
 
 describe('isInSet', () => {
     const ITERATIONS = 80;
@@ -11,6 +11,23 @@ describe('isInSet', () => {
         expect(isInSet(2, 2, ITERATIONS)).toBeTruthy();
         expect(isInSet(1, 0, ITERATIONS)).toBeTruthy();
         expect(isInSet(4, 4, ITERATIONS)).toBeTruthy();
+    });
+});
+
+describe('isInSetJulia', () => {
+    const ITERATIONS = 80;
+    const cRe = -0.1;
+    const cIm = 0.65;
+    test.skip('correctly identifies if is in set', () => {
+        // TODO
+        expect(isInSetJulia(0, 0, cRe, cIm, ITERATIONS)).toBeFalsy();
+        expect(isInSetJulia(0, 1, cRe, cIm, ITERATIONS)).toBeFalsy();
+    });
+    test.skip('correctly identifies if is not in set', () => {
+        // TODO
+        expect(isInSetJulia(2, 2, cRe, cIm, ITERATIONS)).toBeTruthy();
+        expect(isInSetJulia(1, 0, cRe, cIm, ITERATIONS)).toBeTruthy();
+        expect(isInSetJulia(4, 4, cRe, cIm, ITERATIONS)).toBeTruthy();
     });
 });
 
