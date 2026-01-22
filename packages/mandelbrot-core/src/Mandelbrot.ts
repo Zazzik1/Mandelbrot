@@ -24,7 +24,7 @@ export default class Mandelbrot {
     protected ctx: CanvasRenderingContext2D;
     protected resolveDrawFn?: Function;
     protected iterations: number = DEFAULT_ITERATIONS;
-    protected workersNo = DEFAULT_WORKERS_NO;
+    protected workersNo: number;
     protected workersFinished: boolean[] = [];
     protected workers: Worker[] = [];
     protected rgb: RGBColorPalette = DEFAULT_PALETTE;
@@ -32,12 +32,16 @@ export default class Mandelbrot {
     protected colorOffset: number = DEFAULT_COLOR_OFFSET;
     protected isRunning: boolean = false;
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(
+        canvas: HTMLCanvasElement,
+        { workersNo = DEFAULT_WORKERS_NO }: { workersNo?: number } = {},
+    ) {
         if (!canvas) throw new Error('canvas was not provided');
         this.canvas = canvas;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('ctx == null');
         this.ctx = ctx;
+        this.workersNo = workersNo;
 
         for (let i = 0; i < this.workersNo; i++) {
             this.workersFinished[i] = false;
@@ -80,12 +84,20 @@ export default class Mandelbrot {
         this.rgb = colorPalette;
     }
 
-    protected getDaDb(
-        x1: number,
-        y1: number,
-        x2: number,
-        y2: number,
-    ): { da: number; db: number } {
+    protected getDaDb({
+        x1,
+        x2,
+        y1,
+        y2,
+    }: {
+        x1: number;
+        y1: number;
+        x2: number;
+        y2: number;
+    }): {
+        da: number;
+        db: number;
+    } {
         const { width, height } = this.canvas;
         return {
             da: (x2 - x1) / width,
@@ -110,7 +122,7 @@ export default class Mandelbrot {
     public draw(x1: number, y1: number, x2: number, y2: number): Promise<void> {
         return this._draw<MandelbrotTask>({
             ...this.getTaskBase(),
-            ...this.getDaDb(x1, x2, y1, y2),
+            ...this.getDaDb({ x1, x2, y1, y2 }),
             x1: x1,
             y1: y1,
             x2: x2,
@@ -133,7 +145,7 @@ export default class Mandelbrot {
         const { x1, x2, y1, y2 } = params;
         return this._draw<JuliaTask>({
             ...this.getTaskBase(),
-            ...this.getDaDb(x1, x2, y1, y2),
+            ...this.getDaDb({ x1, x2, y1, y2 }),
             ...params,
             kind: FractalKind.Julia,
         });

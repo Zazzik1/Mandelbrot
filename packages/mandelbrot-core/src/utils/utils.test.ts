@@ -1,4 +1,5 @@
-import { hexColorToRGB, isInSet } from "./utils";
+import { describe, test, expect } from 'vitest';
+import { hexColorToRGB, isInSet } from './utils';
 
 describe('isInSet', () => {
     const ITERATIONS = 80;
@@ -23,4 +24,4 @@ describe('hexColorToRGB', () => {
     test('#adbcb0 is converted to [173, 188, 176]', () => {
         expect(hexColorToRGB('#adbcb0')).toEqual([173, 188, 176]);
     });
-})
+});
