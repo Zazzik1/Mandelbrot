@@ -1,9 +1,18 @@
 import { IRGB } from '~/types';
 
 /**
- * Decides if the given point (a+bi) belongs to the Mandelbrot set.
+ * Approximates membership of the Mandelbrot set for c = a + bi
+ * by iterating z => z^2 + c for a fixed number of iterations
+ * and checking whether the iterated values escape
  *
- * Returns 0 when belongs
+ *
+ * ```
+ * z_[0] = 0
+ * z_[n+1] = z_[n]^2 + a + (b * i)
+ * ```
+ *
+ *
+ * Returns 0 if belongs to the set
  *
  * Returns number of iterations otherwise
  */
@@ -11,7 +20,6 @@ export function isInSet(a: number, b: number, iterations: number): number {
     let aa = 0,
         bb = 0;
     for (let i = 1; i <= iterations; i++) {
-        //z' = z^2 + (a+bi)
         const aa2 = aa * aa;
         const bb2 = bb * bb;
 
@@ -24,10 +32,17 @@ export function isInSet(a: number, b: number, iterations: number): number {
 }
 
 /**
- * Decides if the given point (a+bi) belongs to the Julia set.
- * c = (cRe + cIm)
+ * Approximates membership of the Julia set for z = a + bi
+ * under iteration z => z^2 + c
  *
- * Returns 0 when belongs
+ *
+ * ```
+ * z_[0] = a + bi
+ * z_[n+1] = z_[n]^2 + cRe + (cIm * i)
+ * ```
+ *
+ *
+ * Returns 0 if belongs to the set
  *
  * Returns number of iterations otherwise
  */
@@ -38,7 +53,17 @@ export function isInSetJulia(
     cIm: number,
     iterations: number,
 ): number {
-    // TODO
+    let aa = a,
+        bb = b;
+    for (let i = 1; i <= iterations; i++) {
+        const aa2 = aa * aa;
+        const bb2 = bb * bb;
+
+        if (aa2 + bb2 > 4) return i; // (sqrt > 2) diverges
+        let at = aa2 - bb2 + cRe;
+        bb = 2 * aa * bb + cIm;
+        aa = at;
+    }
     return 0;
 }
 
