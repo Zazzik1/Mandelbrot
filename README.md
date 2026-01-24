@@ -39,7 +39,9 @@ import { Mandelbrot } from '@zazzik/mandelbrot-core';
 
 const canvas = document.querySelector('canvas');
 const mandelbrot = new Mandelbrot(canvas);
-mandelbrot.draw(-2, -1.5, 1, 1.5);
+mandelbrot.draw(-2, -1.5, 1, 1.5); // draws the Mandelbrot fractal
+
+mandelbrot.drawJulia({ x1: -2, y1: -2, x2: 2, y2: 2, cRe: -0.2, cIm: 0.7 }); // draws the Julia fractal z=>z^2+c for c=-0.2+0.7i
 ```
 
 _The ESM bundles can be found in [github releases](https://github.com/Zazzik1/Mandelbrot/releases). Use bundles if you want to load the package directly in the browser._
@@ -76,6 +78,8 @@ const App = () => {
     )
 }
 ```
+
+Use the optional props `kind="julia"`, `cRe={number}`, and `cIm={number}` to render the Julia fractal.
 
 Not every release is published to npm. Check the npm page for the latest available version.
 
