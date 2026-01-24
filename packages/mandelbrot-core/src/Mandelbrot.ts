@@ -6,11 +6,15 @@ import {
     DEFAULT_WORKERS_NO,
 } from '~/constants';
 import {
+    TaskBase,
+    FractalKind,
     IRGB,
     MandelbrotMessageData,
     MandelbrotWorkerMessageData,
     RGBColorPalette,
     Task,
+    JuliaTask,
+    MandelbrotTask,
 } from '~/types';
 import { hexColorToRGB } from '~/utils/utils';
 import { DrawAbortedError } from './errors';
@@ -20,7 +24,7 @@ export default class Mandelbrot {
     protected ctx: CanvasRenderingContext2D;
     protected resolveDrawFn?: Function;
     protected iterations: number = DEFAULT_ITERATIONS;
-    protected workersNo = DEFAULT_WORKERS_NO;
+    protected workersNo: number;
     protected workersFinished: boolean[] = [];
     protected workers: Worker[] = [];
     protected rgb: RGBColorPalette = DEFAULT_PALETTE;
@@ -28,12 +32,16 @@ export default class Mandelbrot {
     protected colorOffset: number = DEFAULT_COLOR_OFFSET;
     protected isRunning: boolean = false;
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(
+        canvas: HTMLCanvasElement,
+        { workersNo = DEFAULT_WORKERS_NO }: { workersNo?: number } = {},
+    ) {
         if (!canvas) throw new Error('canvas was not provided');
         this.canvas = canvas;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('ctx == null');
         this.ctx = ctx;
+        this.workersNo = workersNo;
 
         for (let i = 0; i < this.workersNo; i++) {
             this.workersFinished[i] = false;
@@ -54,26 +62,98 @@ export default class Mandelbrot {
         }
     }
 
-    public setConvergedColor(color: IRGB | string) {
+    public setCanvas(canvas: HTMLCanvasElement): void {
+        if (!canvas) throw new Error('canvas was not provided');
+        this.canvas = canvas;
+    }
+
+    public setConvergedColor(color: IRGB | string): IRGB {
         if (Array.isArray(color)) return (this.convergedColor = color);
         return (this.convergedColor = hexColorToRGB(color));
     }
 
-    public setColorOffset(colorOffset: number) {
+    public setColorOffset(colorOffset: number): void {
         this.colorOffset = colorOffset;
     }
 
-    public setIterations(iterations: number) {
+    public setIterations(iterations: number): void {
         this.iterations = iterations;
     }
 
-    public setColorPalette(colorPalette: RGBColorPalette) {
+    public setColorPalette(colorPalette: RGBColorPalette): void {
         this.rgb = colorPalette;
     }
 
-    public draw(x1: number, y1: number, x2: number, y2: number) {
+    protected getDaDb({
+        x1,
+        x2,
+        y1,
+        y2,
+    }: {
+        x1: number;
+        y1: number;
+        x2: number;
+        y2: number;
+    }): {
+        da: number;
+        db: number;
+    } {
+        const { width, height } = this.canvas;
+        return {
+            da: (x2 - x1) / width,
+            db: (y2 - y1) / height,
+        };
+    }
+
+    protected getTaskBase(): TaskBase {
+        const { width, height } = this.canvas;
+        return {
+            width,
+            height,
+            iterations: this.iterations,
+            colorOffset: this.colorOffset,
+            convergedColor: this.convergedColor,
+        };
+    }
+
+    /**
+     * Draws the Mandelbrot fractal on the canvas.
+     */
+    public draw(x1: number, y1: number, x2: number, y2: number): Promise<void> {
+        return this._draw<MandelbrotTask>({
+            ...this.getTaskBase(),
+            ...this.getDaDb({ x1, x2, y1, y2 }),
+            x1: x1,
+            y1: y1,
+            x2: x2,
+            y2: y2,
+            kind: FractalKind.Mandelbrot,
+        });
+    }
+
+    /**
+     * Draws the Julia fractal on the canvas.
+     */
+    public drawJulia(params: {
+        x1: number;
+        y1: number;
+        x2: number;
+        y2: number;
+        cRe: number;
+        cIm: number;
+    }): Promise<void> {
+        const { x1, x2, y1, y2 } = params;
+        return this._draw<JuliaTask>({
+            ...this.getTaskBase(),
+            ...this.getDaDb({ x1, x2, y1, y2 }),
+            ...params,
+            kind: FractalKind.Julia,
+        });
+    }
+
+    protected _draw<T extends Task>(task: T): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            const { width, height } = this.canvas;
+            const { width, height } = task;
             this.resolveDrawFn = resolve;
             if (this.isRunning) await this.forceStopWorkers();
             // only one promise at once continue:
@@ -87,20 +167,6 @@ export default class Mandelbrot {
             this.isRunning = true;
             this.ctx.clearRect(0, 0, width, height);
 
-            const task: Task = {
-                x1: x1,
-                y1: y1,
-                x2: x2,
-                y2: y2,
-                width,
-                height,
-                da: (x2 - x1) / width,
-                db: (y2 - y1) / height,
-                iterations: this.iterations,
-                colorOffset: this.colorOffset,
-                convergedColor: this.convergedColor,
-            };
-
             const { workersNo } = this;
             for (let i = 0; i < workersNo; i++) {
                 let worker = this.workers[i];
@@ -108,7 +174,7 @@ export default class Mandelbrot {
                 const message: MandelbrotWorkerMessageData = {
                     type: 'calculate',
                     payload: {
-                        task: task,
+                        task,
                         workerId: i,
                         linesToDo: height / workersNo,
                         startingLine: (height * i) / workersNo,
@@ -120,7 +186,7 @@ export default class Mandelbrot {
         });
     }
 
-    public forceStopWorkers() {
+    public forceStopWorkers(): Promise<void> {
         return new Promise<void>((resolve) => {
             const message: MandelbrotWorkerMessageData = { type: 'force_stop' };
             for (let i = 0; i < this.workersNo; i++) {
@@ -140,7 +206,7 @@ export default class Mandelbrot {
         });
     }
 
-    public drawLine(y: number, lineBuffer: ArrayBufferLike) {
+    public drawLine(y: number, lineBuffer: ArrayBufferLike): void {
         const line = new ImageData(
             // @ts-ignore
             new Uint8ClampedArray(lineBuffer),
@@ -150,11 +216,11 @@ export default class Mandelbrot {
         this.ctx.putImageData(line, 0, y);
     }
 
-    public areAllWorkersFinished() {
+    public areAllWorkersFinished(): boolean {
         return !this.workersFinished.includes(false);
     }
 
-    protected tryToFinish() {
+    protected tryToFinish(): void {
         if (!this.areAllWorkersFinished()) return;
         this.isRunning = false;
         if (typeof this.resolveDrawFn === 'function') this.resolveDrawFn();

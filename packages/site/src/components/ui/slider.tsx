@@ -1,8 +1,9 @@
 import { Slider as ChakraSlider, For, HStack } from '@chakra-ui/react';
 import * as React from 'react';
 
+export type Mark = { value: number; label: React.ReactNode };
 export interface SliderProps extends ChakraSlider.RootProps {
-    marks?: Array<number | { value: number; label: React.ReactNode }>;
+    marks?: Array<number | Mark>;
     label?: React.ReactNode;
     showValue?: boolean;
 }
@@ -18,9 +19,7 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
             return mark;
         });
 
-        const hasMarkLabel = !!marks?.some(
-            (mark: { value: number; label: string }) => mark.label,
-        );
+        const hasMarkLabel = !!marks?.some((mark) => (mark as Mark).label);
 
         return (
             <ChakraSlider.Root
@@ -44,7 +43,7 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                         <ChakraSlider.Range />
                     </ChakraSlider.Track>
                     <SliderThumbs value={value} />
-                    <SliderMarks marks={marks} />
+                    <SliderMarks marks={marks as Mark[]} />
                 </ChakraSlider.Control>
             </ChakraSlider.Root>
         );

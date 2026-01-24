@@ -167,7 +167,7 @@ function App() {
                         <Field.Label>Max iterations (precision)</Field.Label>
                         <NumberInput.Root
                             maxW="200px"
-                            value={iterations}
+                            value={iterations.toString()}
                             onValueChange={(e: ValueChangeDetails) =>
                                 setIterations(
                                     e.valueAsNumber > 0

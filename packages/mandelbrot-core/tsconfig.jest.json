@@ -1,7 +1,10 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "types": ["jest"]
-  },
-  "include": ["src/**/*.test.ts"]
+    "compilerOptions": {
+        "module": "NodeNext",
+        "target": "ES2020",
+        "moduleResolution": "NodeNext",
+        "lib": ["ES2020", "DOM"],
+        "isolatedModules": true
+    },
+    "include": ["src/**/*.ts", "tests/**/*.ts"]
 }

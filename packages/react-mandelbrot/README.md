@@ -30,3 +30,5 @@ const App = () => {
     )
 }
 ```
+
+Use the optional props `kind="julia"`, `cRe={number}`, and `cIm={number}` to render the Julia fractal.

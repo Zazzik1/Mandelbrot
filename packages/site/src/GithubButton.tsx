@@ -1,13 +1,18 @@
 import { IconButton } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa';
 
+const handleOnClick = () => {
+    window.open(
+        'https://github.com/Zazzik1/Mandelbrot',
+        '_blank',
+        'noopener noreferrer',
+    );
+};
+
 export default function GitHubButton() {
     return (
         <IconButton
-            as="a"
-            href="https://github.com/Zazzik1/Mandelbrot"
-            target="_blank"
-            rel="noopener noreferrer"
+            onClick={handleOnClick}
             aria-label="GitHub"
             variant="ghost"
             padding="0 8px"
