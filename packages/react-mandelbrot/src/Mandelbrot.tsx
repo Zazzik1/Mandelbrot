@@ -38,6 +38,12 @@ type Props = {
      * Default: true.
      */
     mouseWheelEnabled?: boolean;
+
+    kind?: 'mandelbrot' | 'julia';
+    /** Used only if `kind`=`"julia"`. c = cRe + (cIm * i) */
+    cRe?: number;
+    /** Used only if `kind`=`"julia"`. c = cRe + (cIm * i) */
+    cIm?: number;
 };
 
 export type MandelbrotRef = {
@@ -58,6 +64,9 @@ const Mandelbrot = forwardRef<MandelbrotRef, Props>(
             mouseClickEnabled = true,
             mouseWheelEnabled = true,
             onPositionChange,
+            kind = 'mandelbrot',
+            cIm = 0,
+            cRe = 0,
         },
         ref,
     ) => {
@@ -187,10 +196,17 @@ const Mandelbrot = forwardRef<MandelbrotRef, Props>(
                     mandelbrot.setConvergedColor(convergedColor);
 
                 const { x1, y1, x2, y2 } = position;
-                mandelbrot.draw(x1, y1, x2, y2).catch((err) => {
-                    if (err instanceof DrawAbortedError) return;
-                    console.error(err);
-                });
+                if (kind === 'julia') {
+                    mandelbrot
+                        .drawJulia({ x1, y1, x2, y2, cRe, cIm })
+                        .catch((err) => {
+                            if (err instanceof DrawAbortedError) return;
+                        });
+                } else {
+                    mandelbrot.draw(x1, y1, x2, y2).catch((err) => {
+                        if (err instanceof DrawAbortedError) return;
+                    });
+                }
             }
         }, [
             position.x1,
@@ -203,6 +219,9 @@ const Mandelbrot = forwardRef<MandelbrotRef, Props>(
             iterations,
             width,
             height,
+            kind,
+            cIm,
+            cRe,
         ]);
         return (
             <canvas
