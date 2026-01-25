@@ -3,7 +3,6 @@ import {
     DEFAULT_CONVERGED_COLOR,
     DEFAULT_ITERATIONS,
     DEFAULT_PALETTE,
-    DEFAULT_WORKERS_NO,
 } from '~/constants';
 import {
     TaskBase,
@@ -18,6 +17,10 @@ import {
 } from '~/types';
 import { hexColorToRGB } from '~/utils/utils';
 import { DrawAbortedError } from './errors';
+import {
+    BaseDrawingOrderStrategy,
+    UniformDrawingOrderStrategy,
+} from './utils/strategies';
 
 export default class Mandelbrot {
     protected canvas: HTMLCanvasElement;
@@ -25,37 +28,52 @@ export default class Mandelbrot {
     protected resolveDrawFn?: Function;
     protected iterations: number = DEFAULT_ITERATIONS;
     protected workersNo: number;
-    protected workersFinished: boolean[] = [];
+    protected workersNotFinished: Set<number> = new Set();
     protected workers: Worker[] = [];
     protected rgb: RGBColorPalette = DEFAULT_PALETTE;
     protected convergedColor: IRGB = DEFAULT_CONVERGED_COLOR;
     protected colorOffset: number = DEFAULT_COLOR_OFFSET;
     protected isRunning: boolean = false;
+    protected isStopping: boolean = false;
+    protected linesToDo: number[] = [];
+    protected lineIndex: number = 0;
+    protected drawingOrderStrategy: BaseDrawingOrderStrategy;
 
     constructor(
         canvas: HTMLCanvasElement,
-        { workersNo = DEFAULT_WORKERS_NO }: { workersNo?: number } = {},
+        { workersNo }: { workersNo?: number } = {},
     ) {
         if (!canvas) throw new Error('canvas was not provided');
         this.canvas = canvas;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('ctx == null');
         this.ctx = ctx;
-        this.workersNo = workersNo;
+        this.workersNo = workersNo ?? navigator.hardwareConcurrency;
+        this.drawingOrderStrategy = new UniformDrawingOrderStrategy();
 
         for (let i = 0; i < this.workersNo; i++) {
-            this.workersFinished[i] = false;
+            this.workersNotFinished.add(i);
             let worker = new Worker(
                 new URL('@zazzik/mandelbrot-core/worker', import.meta.url),
             );
             worker.addEventListener('message', (e) => {
                 const data = e.data as MandelbrotMessageData;
                 if (data.type == 'finish') {
-                    this.workersFinished[i] = true;
+                    this.workersNotFinished.delete(i);
                     this.tryToFinish();
                 } else if (data.type == 'draw_line') {
+                    if (this.isStopping || !this.isRunning) return;
                     const { y, lineBuffer } = data.payload;
                     requestAnimationFrame(() => this.drawLine(y, lineBuffer));
+                    if (this.lineIndex < this.linesToDo.length) {
+                        const lineIndex = this.lineIndex++; // read and increment
+                        this.workers[i].postMessage({
+                            type: 'next_line',
+                            payload: {
+                                y: this.linesToDo[lineIndex],
+                            },
+                        } satisfies MandelbrotWorkerMessageData);
+                    }
                 }
             });
             this.workers.push(worker);
@@ -82,6 +100,10 @@ export default class Mandelbrot {
 
     public setColorPalette(colorPalette: RGBColorPalette): void {
         this.rgb = colorPalette;
+    }
+
+    public setDrawingOrderStrategy(strategy: BaseDrawingOrderStrategy): void {
+        this.drawingOrderStrategy = strategy;
     }
 
     protected getDaDb({
@@ -168,26 +190,32 @@ export default class Mandelbrot {
             this.ctx.clearRect(0, 0, width, height);
 
             const { workersNo } = this;
+
+            this.linesToDo = this.drawingOrderStrategy.reorder(
+                Array.from({ length: height }, (_, idx) => idx),
+            );
+            this.lineIndex = 0;
             for (let i = 0; i < workersNo; i++) {
                 let worker = this.workers[i];
-                this.workersFinished[i] = false;
+                this.workersNotFinished.add(i);
                 const message: MandelbrotWorkerMessageData = {
                     type: 'calculate',
                     payload: {
                         task,
                         workerId: i,
-                        linesToDo: height / workersNo,
-                        startingLine: (height * i) / workersNo,
+                        lineToDo: this.linesToDo[this.lineIndex],
                         rgb: this.rgb,
                     },
                 };
                 worker.postMessage(message);
+                this.lineIndex++;
             }
         });
     }
 
     public forceStopWorkers(): Promise<void> {
         return new Promise<void>((resolve) => {
+            this.isStopping = true;
             const message: MandelbrotWorkerMessageData = { type: 'force_stop' };
             for (let i = 0; i < this.workersNo; i++) {
                 let worker = this.workers[i];
@@ -197,6 +225,8 @@ export default class Mandelbrot {
             const loop = () => {
                 if (this.areAllWorkersFinished()) {
                     clearTimeout(timeout);
+                    this.isStopping = false;
+                    this.isRunning = false;
                     resolve();
                     return;
                 }
@@ -217,7 +247,7 @@ export default class Mandelbrot {
     }
 
     public areAllWorkersFinished(): boolean {
-        return !this.workersFinished.includes(false);
+        return !this.workersNotFinished.size;
     }
 
     protected tryToFinish(): void {

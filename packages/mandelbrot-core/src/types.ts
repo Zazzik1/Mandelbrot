@@ -41,8 +41,7 @@ export type RGBColorPalette = IRGB[];
 export type CalculateActionPayload = {
     task: Task;
     workerId: number;
-    linesToDo: number;
-    startingLine: number;
+    lineToDo: number;
     rgb: RGBColorPalette;
 };
 
@@ -50,7 +49,9 @@ export type RunningMandelbrotWorkerData = CalculateActionPayload & {
     isRunning: true;
 };
 
-export type NotRunningMandelbrotWorkerData = { isRunning: false };
+export type NotRunningMandelbrotWorkerData = {
+    isRunning: false;
+};
 
 export type WorkerData =
     | RunningMandelbrotWorkerData
@@ -65,6 +66,13 @@ type ForceStopMessage = {
     type: 'force_stop';
 };
 
+type NextLineMessage = {
+    type: 'next_line';
+    payload: {
+        y: number;
+    };
+};
+
 type FinishMessage = { type: 'finish' };
 
 type DrawLineMessage = {
@@ -75,6 +83,11 @@ type DrawLineMessage = {
     };
 };
 
-export type MandelbrotWorkerMessageData = CalculateMessage | ForceStopMessage;
+/** Messages sent to workers. */
+export type MandelbrotWorkerMessageData =
+    | CalculateMessage
+    | ForceStopMessage
+    | NextLineMessage;
 
+/** Messages received from workers. */
 export type MandelbrotMessageData = FinishMessage | DrawLineMessage;
