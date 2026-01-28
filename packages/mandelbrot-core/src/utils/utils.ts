@@ -24,7 +24,7 @@ export function isInSet(a: number, b: number, iterations: number): number {
         const bb2 = bb * bb;
 
         if (aa2 + bb2 > 4) return i; // (sqrt > 2) diverges
-        let at = aa2 - bb2 + a;
+        const at = aa2 - bb2 + a;
         bb = 2 * aa * bb + b;
         aa = at;
     }
@@ -60,7 +60,7 @@ export function isInSetJulia(
         const bb2 = bb * bb;
 
         if (aa2 + bb2 > 4) return i; // (sqrt > 2) diverges
-        let at = aa2 - bb2 + cRe;
+        const at = aa2 - bb2 + cRe;
         bb = 2 * aa * bb + cIm;
         aa = at;
     }
