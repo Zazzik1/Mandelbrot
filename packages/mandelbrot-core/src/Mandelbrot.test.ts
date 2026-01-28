@@ -70,6 +70,7 @@ describe('Mandelbrot', () => {
         expect(MockWorker.instances.length).toBe(workersNo);
 
         mandelbrot.draw(x1, y1, x2, y2);
+        const linesToDo = [0, 500, 250];
         for (
             let workerId = 0;
             workerId < MockWorker.instances.length;
@@ -81,8 +82,7 @@ describe('Mandelbrot', () => {
                 type: 'calculate',
                 payload: {
                     workerId,
-                    startingLine: (canvas.height * workerId) / workersNo,
-                    linesToDo: canvas.height / workersNo,
+                    lineToDo: linesToDo[workerId],
                     rgb: DEFAULT_PALETTE,
                     task: {
                         x1,
@@ -111,6 +111,7 @@ describe('Mandelbrot', () => {
         const cRe = -0.1;
         const cIm = 0.65;
         mandelbrot.drawJulia({ x1, y1, x2, y2, cRe, cIm });
+        const linesToDo = [0, 500, 250];
         for (
             let workerId = 0;
             workerId < MockWorker.instances.length;
@@ -122,8 +123,7 @@ describe('Mandelbrot', () => {
                 type: 'calculate',
                 payload: {
                     workerId,
-                    startingLine: (canvas.height * workerId) / workersNo,
-                    linesToDo: canvas.height / workersNo,
+                    lineToDo: linesToDo[workerId],
                     rgb: DEFAULT_PALETTE,
                     task: {
                         x1,
@@ -148,6 +148,8 @@ describe('Mandelbrot', () => {
 
     test('calls .drawLine method when "draw_line" type message is received', () => {
         const mandelbrot = new Mandelbrot(canvas, { workersNo: 1 });
+        // @ts-ignore
+        mandelbrot.isRunning = true;
         vi.spyOn(mandelbrot, 'drawLine').mockImplementation(() => {});
         const worker = MockWorker.instances[0];
         vi.useFakeTimers();

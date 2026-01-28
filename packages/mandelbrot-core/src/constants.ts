@@ -47,5 +47,4 @@ export enum ZOOM_MULTIPLIER {
     SCROLL_ZOOM_OUT = 1 / 1.1,
 }
 
-export const DEFAULT_WORKERS_NO = 32;
 export const DEFAULT_COLOR_OFFSET = 0;

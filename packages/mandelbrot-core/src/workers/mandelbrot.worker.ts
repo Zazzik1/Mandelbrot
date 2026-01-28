@@ -9,7 +9,6 @@ import {
 } from '~/types';
 import {
     BaseFractalWorkerStrategy,
-    isInSet,
     JuliaSetWorkerStrategy,
     MendelbrotSetWorkerStrategy,
 } from '~/utils/utils';
@@ -44,13 +43,9 @@ class MandelbrotWorker {
             isRunning: true,
         };
 
-        this._runLoop(details.startingLine);
+        this.handleLine(details.lineToDo);
     }
-    protected _runLoop = (lineNo: number): void => {
-        const { data } = this;
-        if (!data.isRunning) return this.finish();
-        if (lineNo >= data.startingLine + data.linesToDo) return this.finish();
-
+    public handleLine = (lineNo: number): void => {
         const line = this.calculateLine(lineNo);
         const message = {
             type: 'draw_line',
@@ -60,12 +55,10 @@ class MandelbrotWorker {
             },
         } as MandelbrotMessageData;
         ctx.postMessage(message, [line.data.buffer]); // transferable array is crucial to prevent memory leaks
-        this.loopTimeout = setTimeout(this._runLoop, 0, lineNo + 1);
     };
     /** Stops without notifying. */
     public stop(): void {
         this.data = { isRunning: false };
-        if (this.loopTimeout) clearTimeout(this.loopTimeout);
     }
     /** Stops with notifying, but only if isRunning. */
     public finish(): void {
@@ -108,5 +101,7 @@ ctx.onmessage = (e) => {
             return worker.run(data.payload);
         case 'force_stop':
             return worker.finish();
+        case 'next_line':
+            return worker.handleLine(data.payload.y);
     }
 };
