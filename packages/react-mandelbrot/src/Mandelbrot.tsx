@@ -1,4 +1,10 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
+import React, {
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+} from 'react';
 import {
     DEFAULT_POSITION,
     DrawAbortedError,
@@ -91,7 +97,13 @@ const Mandelbrot = forwardRef<MandelbrotRef, Props>(
                     y2: y1 + lenY,
                 });
             },
-            [onPositionChange, position.x1, position.x2, position.y1, position.y2],
+            [
+                onPositionChange,
+                position.x1,
+                position.x2,
+                position.y1,
+                position.y2,
+            ],
         );
         const mouseWheelHandler = useCallback(
             (e: WheelEvent) => {
@@ -114,8 +126,14 @@ const Mandelbrot = forwardRef<MandelbrotRef, Props>(
 
                 const canvasX = e.offsetX / canvas.width;
                 const canvasY = e.offsetY / canvas.height;
-                if (e.button == 0) return click(canvasX, canvasY, ZOOM_MULTIPLIER.CLICK_ZOOM_IN);
-                if (e.button == 2) return click(0.5, 0.5, ZOOM_MULTIPLIER.CLICK_ZOOM_OUT);
+                if (e.button == 0)
+                    return click(
+                        canvasX,
+                        canvasY,
+                        ZOOM_MULTIPLIER.CLICK_ZOOM_IN,
+                    );
+                if (e.button == 2)
+                    return click(0.5, 0.5, ZOOM_MULTIPLIER.CLICK_ZOOM_OUT);
             },
             [click],
         );
@@ -144,29 +162,46 @@ const Mandelbrot = forwardRef<MandelbrotRef, Props>(
                     canvas.addEventListener('mousedown', mouseDownHandler);
                     canvas.addEventListener('contextmenu', onContextMenu);
                 }
-                if (mouseWheelEnabled) canvas.addEventListener('wheel', mouseWheelHandler);
+                if (mouseWheelEnabled)
+                    canvas.addEventListener('wheel', mouseWheelHandler);
                 return () => {
                     if (mouseClickEnabled) {
-                        canvas.removeEventListener('mousedown', mouseDownHandler);
-                        canvas.removeEventListener('contextmenu', onContextMenu);
+                        canvas.removeEventListener(
+                            'mousedown',
+                            mouseDownHandler,
+                        );
+                        canvas.removeEventListener(
+                            'contextmenu',
+                            onContextMenu,
+                        );
                     }
-                    if (mouseWheelEnabled) canvas.removeEventListener('wheel', mouseWheelHandler);
+                    if (mouseWheelEnabled)
+                        canvas.removeEventListener('wheel', mouseWheelHandler);
                 };
             }
-        }, [mouseWheelEnabled, mouseClickEnabled, mouseDownHandler, mouseWheelHandler]);
+        }, [
+            mouseWheelEnabled,
+            mouseClickEnabled,
+            mouseDownHandler,
+            mouseWheelHandler,
+        ]);
         useEffect(() => {
             if (mandelBrotRef.current) {
                 const mandelbrot = mandelBrotRef.current;
                 if (colorOffset != null) mandelbrot.setColorOffset(colorOffset);
-                if (colorPalette != null) mandelbrot.setColorPalette(colorPalette);
+                if (colorPalette != null)
+                    mandelbrot.setColorPalette(colorPalette);
                 if (iterations != null) mandelbrot.setIterations(iterations);
-                if (convergedColor != null) mandelbrot.setConvergedColor(convergedColor);
+                if (convergedColor != null)
+                    mandelbrot.setConvergedColor(convergedColor);
 
                 const { x1, y1, x2, y2 } = position;
                 if (kind === 'julia') {
-                    mandelbrot.drawJulia({ x1, y1, x2, y2, cRe, cIm }).catch((err) => {
-                        if (err instanceof DrawAbortedError) return;
-                    });
+                    mandelbrot
+                        .drawJulia({ x1, y1, x2, y2, cRe, cIm })
+                        .catch((err) => {
+                            if (err instanceof DrawAbortedError) return;
+                        });
                 } else {
                     mandelbrot.draw(x1, y1, x2, y2).catch((err) => {
                         if (err instanceof DrawAbortedError) return;

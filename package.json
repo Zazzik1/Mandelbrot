@@ -2,25 +2,8 @@
     "name": "@zazzik/mandelbrot-workspace",
     "author": "Zazzik1 (https://github.com/Zazzik1)",
     "license": "MIT",
-    "version": "0.0.0",
     "private": "true",
     "workspaces": [
         "packages/*"
-    ],
-    "scripts": {
-        "test": "npm run test --workspaces",
-        "build": "npm run build --workspaces",
-        "lint": "eslint \"packages/**/*.{ts,tsx,js}\"",
-        "lint:fix": "eslint \"packages/**/*.{ts,tsx,js}\" --fix",
-        "format": "prettier \"packages/**/*.{ts,tsx,js,json,md}\" --write"
-    },
-    "devDependencies": {
-        "@eslint/js": "^9.39.2",
-        "eslint": "^9.39.2",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-prettier": "^5.5.5",
-        "eslint-plugin-react-refresh": "^0.4.26",
-        "husky": "^9.1.7",
-        "prettier": "^3.8.1"
-    }
+    ]
 }
