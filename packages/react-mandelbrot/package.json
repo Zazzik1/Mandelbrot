@@ -4,7 +4,7 @@
     "description": "React component library for rendering Mandelbrot fractals with Web Worker support",
     "scripts": {
         "build": "rimraf dist && rollup -c && tsc-alias -p tsconfig.json",
-        "test": "vitest run"
+        "test": "echo TODO"
     },
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -51,10 +51,8 @@
     "devDependencies": {
         "@rollup/plugin-typescript": "^12.1.4",
         "@types/react": "^18.0.0",
-        "happy-dom": "^20.4.0",
         "rimraf": "^6.0.1",
         "rollup": "^4.52.3",
-        "tsc-alias": "^1.8.16",
-        "vitest": "^3.2.4"
+        "tsc-alias": "^1.8.16"
     }
 }

@@ -56,31 +56,32 @@ export function ColorModeIcon() {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface ColorModeButtonProps extends Omit<IconButtonProps, 'aria-label'> {}
 
-export const ColorModeButton = React.forwardRef<HTMLButtonElement, ColorModeButtonProps>(
-    function ColorModeButton(props, ref) {
-        const { toggleColorMode } = useColorMode();
-        return (
-            <ClientOnly fallback={<Skeleton boxSize="9" />}>
-                <IconButton
-                    onClick={toggleColorMode}
-                    variant="ghost"
-                    aria-label="Toggle color mode"
-                    size="sm"
-                    ref={ref}
-                    {...props}
-                    css={{
-                        _icon: {
-                            width: '5',
-                            height: '5',
-                        },
-                    }}
-                >
-                    <ColorModeIcon />
-                </IconButton>
-            </ClientOnly>
-        );
-    },
-);
+export const ColorModeButton = React.forwardRef<
+    HTMLButtonElement,
+    ColorModeButtonProps
+>(function ColorModeButton(props, ref) {
+    const { toggleColorMode } = useColorMode();
+    return (
+        <ClientOnly fallback={<Skeleton boxSize="9" />}>
+            <IconButton
+                onClick={toggleColorMode}
+                variant="ghost"
+                aria-label="Toggle color mode"
+                size="sm"
+                ref={ref}
+                {...props}
+                css={{
+                    _icon: {
+                        width: '5',
+                        height: '5',
+                    },
+                }}
+            >
+                <ColorModeIcon />
+            </IconButton>
+        </ClientOnly>
+    );
+});
 
 export const LightMode = React.forwardRef<HTMLSpanElement, SpanProps>(
     function LightMode(props, ref) {
@@ -98,16 +99,18 @@ export const LightMode = React.forwardRef<HTMLSpanElement, SpanProps>(
     },
 );
 
-export const DarkMode = React.forwardRef<HTMLSpanElement, SpanProps>(function DarkMode(props, ref) {
-    return (
-        <Span
-            color="fg"
-            display="contents"
-            className="chakra-theme dark"
-            colorPalette="gray"
-            colorScheme="dark"
-            ref={ref}
-            {...props}
-        />
-    );
-});
+export const DarkMode = React.forwardRef<HTMLSpanElement, SpanProps>(
+    function DarkMode(props, ref) {
+        return (
+            <Span
+                color="fg"
+                display="contents"
+                className="chakra-theme dark"
+                colorPalette="gray"
+                colorScheme="dark"
+                ref={ref}
+                {...props}
+            />
+        );
+    },
+);

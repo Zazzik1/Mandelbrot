@@ -51,10 +51,15 @@ function App() {
     );
     const [iterations, setIterations] = useState<number>(DEFAULT_ITERATIONS);
     const [mouseWheelEnabled, setMouseWheelEnabled] = useState(true);
-    const [canvasSize, setCanvasSize] = useState<CanvasSizeKey>(DEFAULT_CANVAS_SIZE_KEY);
-    const [colorPaletteKey, setColorPalette] = useState<ColorPaletteKey>('DEFAULT_PALETTE');
+    const [canvasSize, setCanvasSize] = useState<CanvasSizeKey>(
+        DEFAULT_CANVAS_SIZE_KEY,
+    );
+    const [colorPaletteKey, setColorPalette] =
+        useState<ColorPaletteKey>('DEFAULT_PALETTE');
     const [colorOffset, setColorOffset] = useState<number>(0);
-    const [convergedColor, setConvergedColor] = useState(parseColor(DEFAULT_CONVERGED_COLOR));
+    const [convergedColor, setConvergedColor] = useState(
+        parseColor(DEFAULT_CONVERGED_COLOR),
+    );
 
     const colorPalette = RGB_PALETTES[colorPaletteKey as ColorPaletteKey];
     const { width, height } = useMemo(
@@ -86,7 +91,10 @@ function App() {
         mandelbrotRef.current?.click(0.5, 0.5, zoom);
     }, []);
 
-    const convergedColorHex = useMemo(() => convergedColor.toString('hex'), [convergedColor]);
+    const convergedColorHex = useMemo(
+        () => convergedColor.toString('hex'),
+        [convergedColor],
+    );
     return (
         <Stack>
             <HStack
@@ -106,8 +114,9 @@ function App() {
                     color="#bab2c9"
                     marginRight="16px"
                 >
-                    If you want to zoom, just click (left/right mouse button) on desired place on
-                    canvas and sometimes increase iterations to make edges sharpen.
+                    If you want to zoom, just click (left/right mouse button) on
+                    desired place on canvas and sometimes increase iterations to
+                    make edges sharpen.
                 </Text>
                 <Stack>
                     <HStack>
@@ -138,7 +147,9 @@ function App() {
                         <Switch.HiddenInput />
                         <Switch.Control>
                             <Switch.Thumb>
-                                <Switch.ThumbIndicator fallback={<HiX color="black" />}>
+                                <Switch.ThumbIndicator
+                                    fallback={<HiX color="black" />}
+                                >
                                     <HiCheck />
                                 </Switch.ThumbIndicator>
                             </Switch.Thumb>
@@ -178,7 +189,9 @@ function App() {
                         onValueChange={(e) => {
                             const key = e.value[0] as CanvasSizeKey;
                             const { width, height } = CANVAS_SIZES[key];
-                            setPosition((old) => getPositionWithAspectRatio(old, width, height));
+                            setPosition((old) =>
+                                getPositionWithAspectRatio(old, width, height),
+                            );
                             setCanvasSize(key);
                         }}
                     >
@@ -210,7 +223,9 @@ function App() {
                     </Select.Root>
                     <ColorPicker.Root
                         value={convergedColor}
-                        onValueChange={(e: { value: Color }) => setConvergedColor(e.value)}
+                        onValueChange={(e: { value: Color }) =>
+                            setConvergedColor(e.value)
+                        }
                         maxW="140px"
                     >
                         <ColorPicker.HiddenInput />
@@ -238,8 +253,14 @@ function App() {
                         <Slider.Root
                             width="150px"
                             value={[colorOffset]}
-                            onValueChange={(e: { value: number[] }) => setColorOffset(e.value[0])}
-                            max={colorPalette.length ? colorPalette.length - 1 : 1}
+                            onValueChange={(e: { value: number[] }) =>
+                                setColorOffset(e.value[0])
+                            }
+                            max={
+                                colorPalette.length
+                                    ? colorPalette.length - 1
+                                    : 1
+                            }
                             min={0}
                         >
                             <Slider.Label>Color offset</Slider.Label>
