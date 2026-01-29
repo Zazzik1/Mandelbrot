@@ -5,6 +5,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '~': path.resolve(__dirname, 'src'),
+            '@zazzik/mandelbrot-core': path.resolve(__dirname, '../mandelbrot-core/src'),
         },
     },
     test: {

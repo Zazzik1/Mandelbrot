@@ -4,7 +4,8 @@ import { createRef } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Mandelbrot, { MandelbrotRef, Position } from './Mandelbrot';
-import { RGBColorPalette } from '@zazzik/mandelbrot-core';
+
+type RGBColorPalette = [number, number, number][];
 
 const drawMock = vi.fn().mockReturnValue(Promise.resolve());
 const drawJuliaMock = vi.fn().mockReturnValue(Promise.resolve());
@@ -15,6 +16,7 @@ const setConvergedColor = vi.fn<(color: string) => void>();
 
 vi.mock('@zazzik/mandelbrot-core', () => {
     return {
+        default: vi.fn().mockImplementation(() => {}),
         Mandelbrot: vi.fn().mockImplementation(() => ({
             draw: drawMock,
             drawJulia: drawJuliaMock,
