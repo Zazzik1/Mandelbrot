@@ -50,8 +50,12 @@
     },
     "devDependencies": {
         "@rollup/plugin-typescript": "^12.1.4",
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.2",
+        "@testing-library/user-event": "^14.6.1",
         "@types/react": "^18.0.0",
         "happy-dom": "^20.4.0",
+        "jsdom": "^27.0.1",
         "rimraf": "^6.0.1",
         "rollup": "^4.52.3",
         "tsc-alias": "^1.8.16",
