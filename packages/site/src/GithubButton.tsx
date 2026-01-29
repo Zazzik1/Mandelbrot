@@ -2,11 +2,7 @@ import { IconButton } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa';
 
 const handleOnClick = () => {
-    window.open(
-        'https://github.com/Zazzik1/Mandelbrot',
-        '_blank',
-        'noopener noreferrer',
-    );
+    window.open('https://github.com/Zazzik1/Mandelbrot', '_blank', 'noopener noreferrer');
 };
 
 export default function GitHubButton() {
