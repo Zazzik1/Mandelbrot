@@ -53,9 +53,7 @@ export type NotRunningMandelbrotWorkerData = {
     isRunning: false;
 };
 
-export type WorkerData =
-    | RunningMandelbrotWorkerData
-    | NotRunningMandelbrotWorkerData;
+export type WorkerData = RunningMandelbrotWorkerData | NotRunningMandelbrotWorkerData;
 
 type CalculateMessage = {
     type: 'calculate';
@@ -84,10 +82,7 @@ type DrawLineMessage = {
 };
 
 /** Messages sent to workers. */
-export type MandelbrotWorkerMessageData =
-    | CalculateMessage
-    | ForceStopMessage
-    | NextLineMessage;
+export type MandelbrotWorkerMessageData = CalculateMessage | ForceStopMessage | NextLineMessage;
 
 /** Messages received from workers. */
 export type MandelbrotMessageData = FinishMessage | DrawLineMessage;

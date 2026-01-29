@@ -24,11 +24,7 @@ class MandelbrotWorker {
         switch (details.task.kind) {
             case FractalKind.Julia: {
                 const { iterations, cRe, cIm } = details.task;
-                this.strategy = new JuliaSetWorkerStrategy(
-                    iterations,
-                    cRe,
-                    cIm,
-                );
+                this.strategy = new JuliaSetWorkerStrategy(iterations, cRe, cIm);
                 break;
             }
             case FractalKind.Mandelbrot:
@@ -74,11 +70,11 @@ class MandelbrotWorker {
         const da2 = da / 4;
         const b = y1 + y * db;
         for (let x = 0; x < width * 4; x += 4) {
-            let diverge = this.strategy!.calculate(x1 + x * da2, b);
+            const diverge = this.strategy!.calculate(x1 + x * da2, b);
             if (!diverge) {
                 c = this.data.task.convergedColor; // point belongs to the set
             } else {
-                let color = (diverge + colorOffset) % this.data.rgb.length;
+                const color = (diverge + colorOffset) % this.data.rgb.length;
                 c = this.data.rgb[color]; // colors outer points
             }
             line.data[x] = c[0];
@@ -90,6 +86,7 @@ class MandelbrotWorker {
     }
 }
 
+// eslint-disable-next-line no-var, @typescript-eslint/no-explicit-any
 var ctx: Worker = self as any;
 
 const worker = new MandelbrotWorker();

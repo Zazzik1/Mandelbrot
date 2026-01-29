@@ -1,10 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import Mandelbrot from './Mandelbrot';
-import {
-    FractalKind,
-    MandelbrotMessageData,
-    MandelbrotWorkerMessageData,
-} from './types';
+import { FractalKind, MandelbrotMessageData, MandelbrotWorkerMessageData } from './types';
 import { DEFAULT_PALETTE, DEFAULT_POSITION } from './constants';
 
 class MockWorker {
@@ -14,18 +10,15 @@ class MockWorker {
         fn: ({ data }: { data: MandelbrotMessageData }) => void;
     }[] = [];
 
-    onmessage: ((this: Worker, ev: MessageEvent) => any) | null = null;
-    onerror: ((this: Worker, ev: ErrorEvent) => any) | null = null;
+    onmessage: ((this: Worker, ev: MessageEvent) => void) | null = null;
+    onerror: ((this: Worker, ev: ErrorEvent) => void) | null = null;
 
     postMessage = vi.fn();
     terminate = vi.fn();
     addEventListener = vi
         .fn()
         .mockImplementation(
-            (
-                type: 'message',
-                fn: ({ data }: { data: MandelbrotMessageData }) => void,
-            ) => {
+            (type: 'message', fn: ({ data }: { data: MandelbrotMessageData }) => void) => {
                 this.listeners.push({ type, fn });
             },
         );
@@ -71,11 +64,7 @@ describe('Mandelbrot', () => {
 
         mandelbrot.draw(x1, y1, x2, y2);
         const linesToDo = [0, 500, 250];
-        for (
-            let workerId = 0;
-            workerId < MockWorker.instances.length;
-            workerId++
-        ) {
+        for (let workerId = 0; workerId < MockWorker.instances.length; workerId++) {
             const worker = MockWorker.instances[workerId];
             expect(worker.postMessage).toBeCalledTimes(1);
             expect(worker.postMessage).toBeCalledWith({
@@ -112,11 +101,7 @@ describe('Mandelbrot', () => {
         const cIm = 0.65;
         mandelbrot.drawJulia({ x1, y1, x2, y2, cRe, cIm });
         const linesToDo = [0, 500, 250];
-        for (
-            let workerId = 0;
-            workerId < MockWorker.instances.length;
-            workerId++
-        ) {
+        for (let workerId = 0; workerId < MockWorker.instances.length; workerId++) {
             const worker = MockWorker.instances[workerId];
             expect(worker.postMessage).toBeCalledTimes(1);
             expect(worker.postMessage).toBeCalledWith({
@@ -148,7 +133,7 @@ describe('Mandelbrot', () => {
 
     test('calls .drawLine method when "draw_line" type message is received', () => {
         const mandelbrot = new Mandelbrot(canvas, { workersNo: 1 });
-        // @ts-ignore
+        // @ts-expect-error property isRunning is private
         mandelbrot.isRunning = true;
         vi.spyOn(mandelbrot, 'drawLine').mockImplementation(() => {});
         const worker = MockWorker.instances[0];

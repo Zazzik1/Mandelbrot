@@ -10,6 +10,7 @@
         "skipLibCheck": true,
         "baseUrl": ".",
         "importHelpers": true,
+        "lib": ["ES2020", "DOM"],
         "rootDir": "src",
         "paths": {
             "~/*": ["src/*"]
