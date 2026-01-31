@@ -35,6 +35,8 @@ vi.mock('@zazzik/mandelbrot-core', () => {
         ZOOM_MULTIPLIER: {
             CLICK_ZOOM_IN: 2,
             CLICK_ZOOM_OUT: 0.5,
+            SCROLL_ZOOM_IN: 1.1,
+            SCROLL_ZOOM_OUT: 0.9,
         },
     };
 });
@@ -277,17 +279,16 @@ describe('Mandelbrot', () => {
         expect(onPositionChange).not.toBeCalled();
     });
 
-    // TODO: make it work
-    it.skip.for([
+    it.for([
         {
             offsetX: 900,
             offsetY: 700,
             deltaY: 100,
             expectedPosition: {
-                x1: -0.05,
-                x2: 1.45,
-                y1: -0.15,
-                y2: 1.35,
+                x1: -2.167,
+                x2: 1.167,
+                y1: -1.667,
+                y2: 1.667,
             },
         },
         {
@@ -295,10 +296,10 @@ describe('Mandelbrot', () => {
             offsetY: 700,
             deltaY: -100,
             expectedPosition: {
-                x1: -0.05,
-                x2: 1.45,
-                y1: -0.15,
-                y2: 1.35,
+                x1: -1.864,
+                x2: 0.864,
+                y1: -1.364,
+                y2: 1.364,
             },
         },
     ])(
@@ -320,7 +321,11 @@ describe('Mandelbrot', () => {
                 clientY: offsetY,
             });
             expect(onPositionChange).toHaveBeenCalledOnce();
-            expect(onPositionChange).toHaveBeenCalledWith(expectedPosition);
+            const callArg = onPositionChange.mock.calls[0][0];
+            expect(callArg.x1).toBeCloseTo(expectedPosition.x1, 3);
+            expect(callArg.x2).toBeCloseTo(expectedPosition.x2, 3);
+            expect(callArg.y1).toBeCloseTo(expectedPosition.y1, 3);
+            expect(callArg.y2).toBeCloseTo(expectedPosition.y2, 3);
         },
     );
 
