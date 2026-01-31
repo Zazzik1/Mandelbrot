@@ -193,6 +193,7 @@ const Mandelbrot = forwardRef<MandelbrotRef, Props>(
                 ref={canvasRef}
                 width={width}
                 height={height}
+                data-testid="canvas"
             ></canvas>
         );
     },
