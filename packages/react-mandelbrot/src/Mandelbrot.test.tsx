@@ -57,7 +57,8 @@ describe('Mandelbrot', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
-    it('exposes imperative methods', () => {
+
+    it('exposes a handle with imperative methods', () => {
         const onPositionChange = vi.fn();
         const ref = createRef<MandelbrotRef>();
         render(
@@ -70,6 +71,17 @@ describe('Mandelbrot', () => {
         expect(ref.current).toBeTruthy();
         expect(ref.current?.click).toBeTypeOf('function');
         expect(ref.current?.downloadImage).toBeTypeOf('function');
+    });
+
+    it('imperative handle -> .click works as expected', () => {
+        const onPositionChange = vi.fn();
+        const ref = createRef<MandelbrotRef>();
+        render(
+            <Mandelbrot
+                ref={ref}
+                onPositionChange={onPositionChange}
+            />,
+        );
 
         expect(onPositionChange).not.toBeCalled();
         ref.current?.click(0.5, 0.5, 2);
@@ -88,8 +100,34 @@ describe('Mandelbrot', () => {
         expect(callArg.x2).toBeCloseTo(-0.3, 3);
         expect(callArg.y1).toBeCloseTo(0.4, 3);
         expect(callArg.y2).toBeCloseTo(1.4, 3);
+    });
 
-        // TODO: downloadImage
+    it('imperative handle -> .downloadImage works as expected', () => {
+        const ref = createRef<MandelbrotRef>();
+        render(<Mandelbrot ref={ref} />);
+
+        const clickMock = vi.fn();
+        const toDataURLMock = vi
+            .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
+            .mockReturnValue('data:image/png;base64,abc');
+        let a: HTMLAnchorElement | null = null;
+        const spy = vi.spyOn(document, 'createElement').mockImplementation((tag) => {
+            if (tag === 'a') {
+                const element = {
+                    click: clickMock,
+                    href: '',
+                    download: '',
+                } as unknown as HTMLAnchorElement;
+                a = element;
+                return element;
+            }
+            return document.createElement(tag);
+        });
+        ref.current?.downloadImage();
+        expect(clickMock).toHaveBeenCalledOnce();
+        expect((a as HTMLAnchorElement | null)?.href).toBe('data:image/png;base64,abc');
+        spy.mockRestore();
+        toDataURLMock.mockRestore();
     });
     it('calls .draw method in core if kind prop is not provided', () => {
         const position = {
