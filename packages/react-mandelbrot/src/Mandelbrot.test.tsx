@@ -9,7 +9,7 @@ type RGBColorPalette = [number, number, number][];
 
 const drawMock = vi.fn().mockReturnValue(Promise.resolve());
 const drawJuliaMock = vi.fn().mockReturnValue(Promise.resolve());
-const setIterations = vi.fn<(palette: number) => void>();
+const setIterations = vi.fn<(iterations: number) => void>();
 const setColorPalette = vi.fn<(palette: RGBColorPalette) => void>();
 const setColorOffset = vi.fn<(colorOffset: number) => void>();
 const setConvergedColor = vi.fn<(color: string) => void>();
